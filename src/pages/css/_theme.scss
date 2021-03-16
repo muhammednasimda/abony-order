@@ -1,0 +1,25 @@
+$primary-color: #11698e;
+$primary-color-dark: #19456b;
+$secondary-color: #16c79a;
+$danger-color: #ff414d;
+$green: #00b140;
+$mt-1: 5px;
+$mt-2: 10px;
+$mt-3: 15px;
+$ml-1: 5px;
+$ml-2: 10px;
+$ml-3: 15px;
+$mb-1: 5px;
+$mb-2: 10px;
+$mb-3: 15px;
+
+@mixin flexCenter($direction, $verticalAlign, $horizontalAlign) {
+  display: flex;
+  justify-content: $verticalAlign;
+  align-items: $horizontalAlign;
+  flex-direction: $direction;
+}
+@mixin text($fontSize, $fontWieght) {
+  font-size: $fontSize;
+  font-weight: $fontWieght;
+}
