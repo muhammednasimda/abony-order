@@ -308,7 +308,7 @@ const OrderEdit = (props) => {
                     src="https://picsum.photos/200"
                     borderRadius="10px"
                   />
-                  <Stack direction="column">
+                  <Stack direction="column" spacing="0px">
                     <Stack spacing="5" direction="row" mt="2">
                       <Text color="#757575" fontWeight="500">
                         Barcode :
