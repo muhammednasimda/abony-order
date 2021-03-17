@@ -17,6 +17,7 @@ import {
   Button,
 } from "@chakra-ui/react";
 import { SearchIcon } from "@chakra-ui/icons";
+import Fonts from "../components/Fonts";
 
 const OrderList = () => {
   const history = useHistory();
@@ -80,7 +81,7 @@ const OrderList = () => {
             />
           )}
           <Flex flexDirection="column" ml="3" mt="1">
-            <Text fontSize="lg" fontWeight="bold">
+            <Text fontSize="lg" fontWeight="medium">
               {order.customer_name}
             </Text>
             <Stack direction="row">

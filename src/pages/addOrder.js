@@ -40,7 +40,7 @@ import {
 
 //product.product_image is treated as id for product
 const AddOrder = () => {
-  const [paymentMode, setPaymentMethod] = useState("GPAY");
+  const [paymentMode, setPaymentMethod] = useState("BANK");
   const [isOpen, setIsOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [order, setOrder, updateOrder] = useFormLocal([]);
@@ -116,11 +116,7 @@ const AddOrder = () => {
       payment_mode: paymentMode,
       order_status: "RECIEVED",
     };
-    console.log({
-      ...order,
-      payment_mode: paymentMode,
-      products: orderProducts,
-    });
+
     const orderResponse = await supabase.from("orders").insert([orderObject]);
 
     //upoad images to firebase storage
@@ -484,14 +480,20 @@ const AddOrder = () => {
             name="payment_mode"
           >
             <Stack direction="row">
-              <Radio value="GPAY">Gpay PhonePe</Radio>
-              <Radio value="ACCOUNT">Account Transfer</Radio>
-              <Radio value="COD">COD</Radio>
+              <Radio value="BANK" size="lg">
+                BANK
+              </Radio>
+              <Radio value="COD" size="lg">
+                COD
+              </Radio>
+              <Radio value="CASH" size="lg">
+                CASH
+              </Radio>
             </Stack>
           </RadioGroup>
         </FormControl>
 
-        {(paymentMode === "GPAY" || paymentMode === "ACCOUNT") && (
+        {paymentMode === "BANK" && (
           <>
             <FormControl w="90%" mt="5">
               <Stack direction="row">
