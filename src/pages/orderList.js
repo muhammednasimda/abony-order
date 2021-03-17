@@ -150,7 +150,11 @@ const OrderList = () => {
         </InputGroup>
         {searchValue.length < 1
           ? ordersFetched.map((order) => (
-              <OrderCard order={order} key={order.id} />
+              <OrderCard
+                onClick={() => history.push(`/orderedit/${order.id}`)}
+                order={order}
+                key={order.id}
+              />
             ))
           : searchedOrders.map((order) => (
               <OrderCard order={order} key={order.id} />
