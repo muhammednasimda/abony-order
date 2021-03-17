@@ -9,6 +9,7 @@ function App() {
         <Switch>
           <Route path="/addorder" component={AddOrder} />
           <Route path="/orderlist" component={OrderList} />
+          <Route path="/orderedit" component={OrderList} />
         </Switch>
       </Router>
     </>
