@@ -179,33 +179,6 @@ const AddOrder = () => {
     }
   };
 
-  //     const response = await addOrderAPI({
-  //       ...order,
-  //       payment_method: paymentMethod,
-  //       products: orderProducts,
-  //     });
-  //     await imageToServer();
-
-  //     setIsLoading(false);
-  //     history.push("/orders");
-  //   };
-  //   const imageToServer = async () => {
-  //
-  //   };
-  //   const validateFields = async (addCallback) => {
-  //     const isproducts = orderProducts.filter(
-  //       (product) => !product.code || !product.price || !product.size
-  //     );
-  //     if (!order.name || !order.address || isproducts.length > 0) {
-  //       setIsOpen(false);
-  //       setIsValidationError(true);
-  //     } else {
-  //       setIsValidationError(false);
-  //       setIsOpen(false);
-  //       setIsValidationError(false);
-  //       addCallback();
-  //     }
-
   const compressImage = async (event, productId) => {
     //compresses image to below 1MB
     const options = {

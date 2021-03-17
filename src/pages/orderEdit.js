@@ -1,12 +1,9 @@
 import { React, useRef, useState, useEffect } from "react";
 import styles from "./css/addOrder.module.scss";
-import imageCompression from "browser-image-compression";
-import { v4 as uuidv4 } from "uuid";
 import { useHistory } from "react-router-dom";
-
-import { useFormLocal } from "../components/useFormLocal";
 import supabase from "../supabase";
 import "react-datepicker/dist/react-datepicker.css";
+import DatePicker from "react-date-picker";
 import {
   CloseIcon,
   AddIcon,
@@ -26,6 +23,9 @@ import {
   Badge,
   Img,
 } from "@chakra-ui/react";
+
+import Popup from "reactjs-popup";
+import "reactjs-popup/dist/index.css";
 import {
   Box,
   InputGroup,
@@ -55,15 +55,7 @@ import {
   Text,
   useDisclosure,
 } from "@chakra-ui/react";
-import {
-  Drawer,
-  DrawerBody,
-  DrawerFooter,
-  DrawerHeader,
-  DrawerOverlay,
-  DrawerContent,
-  DrawerCloseButton,
-} from "@chakra-ui/react";
+
 import Header from "../components/Header";
 
 //product.product_image is treated as id for product
@@ -319,7 +311,7 @@ const OrderEdit = (props) => {
                       <Text color="#757575" fontWeight="500">
                         Price :
                       </Text>
-                      <Text colorScheme="black">{product.product_price}</Text>
+                      <Text colorScheme="black">₹{product.product_price}</Text>
                     </Stack>
                     <Stack spacing="5" direction="row" mt="2">
                       <Text color="#757575" fontWeight="500">
@@ -340,9 +332,78 @@ const OrderEdit = (props) => {
         </Box>
 
         <Box borderRadius="10px" backgroundColor="white" p="10px" margin="5px">
-          <Heading color="#29283C" fontSize="18px" fontWeight="600">
-            Courier Details
-          </Heading>
+          <Stack direction="row" justifyContent="space-between">
+            <Heading color="#29283C" fontSize="18px" fontWeight="600">
+              Courier Details
+            </Heading>
+            <Popup
+              lockScroll="true"
+              modal="true"
+              trigger={<IconButton icon={<EditIcon />} size="sm" />}
+              position="right center"
+            >
+              <>
+                <FormLabel>Shipping Partner</FormLabel>
+                <Select
+                  value={orderDetails.shipping_partner}
+                  onChange={(e) => {
+                    setOrderDetails((old) => ({
+                      ...old,
+                      shipping_partner: e.target.value,
+                    }));
+                  }}
+                  mb="20px"
+                >
+                  <option value="">NONE</option>
+                  <option value="DELHIVERY">DELHIVERY</option>
+                  <option value="DTDC">DTDC</option>
+                  <option value="SHIPROCKET">SHIPROCKET</option>
+                  <option value="HAND">HAND</option>
+                </Select>
+                <FormLabel>AWB Number</FormLabel>
+                <Input
+                  type="text"
+                  onChange={(e) => {
+                    setOrderDetails((old) => ({
+                      ...old,
+                      shipping_awb: e.target.value,
+                    }));
+                  }}
+                />
+
+                <FormLabel mt="5"> Shipping charge</FormLabel>
+                <Input
+                  type="number"
+                  defaultValue={orderDetails.shipping_charge}
+                  onChange={(e) =>
+                    setOrderDetails({
+                      ...orderDetails,
+                      shipping_charge: e.target.value,
+                    })
+                  }
+                />
+                <FormLabel>Shipping Date :</FormLabel>
+                <DatePicker
+                  format="dd/MM/yyyy"
+                  value={orderDetails.shipping_date}
+                  onChange={(date) => {
+                    setOrderDetails({ ...orderDetails, shipping_date: date });
+                  }}
+                />
+                <FormLabel>Delivered Date :</FormLabel>
+                <DatePicker
+                  format="dd/MM/yyyy"
+                  value={orderDetails.shipping_delivered_date}
+                  onChange={(date) => {
+                    setOrderDetails({
+                      ...orderDetails,
+                      shipping_delivered_date: date,
+                    });
+                  }}
+                />
+              </>
+            </Popup>
+          </Stack>
           <Stack direction="row" mt="2">
             <Text color="#757575" fontWeight="500">
               Partner :

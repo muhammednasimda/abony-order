@@ -61,7 +61,13 @@ const OrderList = () => {
 
   const OrderCard = ({ order }) => {
     return (
-      <Box w="95%" margin="5px" borderWidth="1px" borderRadius="lg">
+      <Box
+        w="95%"
+        margin="5px"
+        borderWidth="1px"
+        borderRadius="lg"
+        onClick={() => history.push(`/orderedit/${order.id}`)}
+      >
         <Flex>
           {order.order_products.length > 0 ? (
             <Image
@@ -150,11 +156,7 @@ const OrderList = () => {
         </InputGroup>
         {searchValue.length < 1
           ? ordersFetched.map((order) => (
-              <OrderCard
-                onClick={() => history.push(`/orderedit/${order.id}`)}
-                order={order}
-                key={order.id}
-              />
+              <OrderCard order={order} key={order.id} />
             ))
           : searchedOrders.map((order) => (
               <OrderCard order={order} key={order.id} />
