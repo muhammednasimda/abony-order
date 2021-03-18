@@ -10,7 +10,18 @@ import supabase from "../supabase";
 import "react-datepicker/dist/react-datepicker.css";
 import { CloseIcon, AddIcon } from "@chakra-ui/icons";
 import firebase from "../firebase";
-
+import {
+  Badge,
+  Flex,
+  Img,
+  InputRightElement,
+  Modal,
+  ModalBody,
+  ModalContent,
+  ModalOverlay,
+  Spinner,
+  useDisclosure,
+} from "@chakra-ui/react";
 import {
   Box,
   InputGroup,
@@ -41,9 +52,11 @@ import {
 //product.product_image is treated as id for product
 const AddOrder = () => {
   const [paymentMode, setPaymentMethod] = useState("BANK");
-  const [isOpen, setIsOpen] = useState(false);
+  const [isAlertOpen, setIsAlertOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [order, setOrder, updateOrder] = useFormLocal([]);
+
+  const { isOpen, onOpen, onClose } = useDisclosure();
   const [orderProducts, setOrderProducts] = useState([
     {
       product_barcode: "",
@@ -69,6 +82,50 @@ const AddOrder = () => {
       payment_status: true,
     });
   }, []);
+
+  const LoadingCard = () => {
+    return (
+      <Modal
+        isOpen={isOpen}
+        onClose={onClose}
+        closeOnOverlayClick={false}
+        width="10"
+        size="xs"
+        isCentered
+      >
+        <ModalOverlay />
+
+        <ModalContent w="130px" height="130px" borderRadius="20px">
+          <ModalBody>
+            <Flex w="100%" h="100%" justifyContent="center" alignItems="center">
+              {isLoading ? (
+                <Spinner size="lg" />
+              ) : (
+                <svg
+                  class={styles.checkmark}
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 52 52"
+                >
+                  <circle
+                    class={styles.checkmark__circle}
+                    cx="26"
+                    cy="26"
+                    r="25"
+                    fill="none"
+                  />
+                  <path
+                    class={styles.checkmark__check}
+                    fill="none"
+                    d="M14.1 27.2l7.1 7.2 16.7-16.8"
+                  />
+                </svg>
+              )}
+            </Flex>
+          </ModalBody>
+        </ModalContent>
+      </Modal>
+    );
+  };
 
   //change or edit products array in state
   const handleOrderProduct = (name, value, id) => {
@@ -108,8 +165,9 @@ const AddOrder = () => {
 
   //   add order to server
   const addOrder = async () => {
-    setIsOpen(false);
-    // setIsLoading(true);
+    setIsAlertOpen(false);
+    setIsLoading(true);
+    onOpen();
 
     const orderObject = {
       ...order,
@@ -133,10 +191,15 @@ const AddOrder = () => {
         product_order_id: orderResponse.data[0].id,
       };
     });
-    const orderProductsResponse = await supabase
+    const { orderProductsResponse, error } = await supabase
       .from("order_products")
       .insert(newOrderProducts);
-
+    //after insert success
+    setIsLoading(false);
+    setTimeout(() => {
+      onClose();
+      history.push("/");
+    }, 2000);
     console.log(orderProductsResponse);
   };
 
@@ -151,7 +214,7 @@ const AddOrder = () => {
     }
   };
 
-  const valdateFields = async (addCallback) => {
+  const valdateFields = async () => {
     //validate order details
     if (
       order.customer_name ||
@@ -167,14 +230,14 @@ const AddOrder = () => {
           !product.product_size
       );
       if (isproducts.length > 0) {
-        setIsOpen(false);
+        setIsAlertOpen(false);
         setIsValidationError(true);
       } else {
-        setIsOpen(true);
+        setIsAlertOpen(true);
         setIsValidationError(false);
       }
     } else {
-      setIsOpen(false);
+      setIsAlertOpen(false);
       setIsValidationError(true);
     }
   };
@@ -213,6 +276,7 @@ const AddOrder = () => {
         <h1 className={styles.label}>Add Order</h1>
       </div>
       <div className={styles.container}>
+        <LoadingCard />
         <FormControl w="90%" mt="2" isRequired>
           <FormLabel>Order Date :</FormLabel>
           <DatePicker
@@ -439,7 +503,6 @@ const AddOrder = () => {
           alignSelf="flex-start"
           ml="3"
           colorScheme="blue"
-          type="submit"
         >
           Add Prduct
         </Button>
@@ -532,9 +595,10 @@ const AddOrder = () => {
         </Button>
 
         <AlertDialog
-          isOpen={isOpen}
+          isOpen={isAlertOpen}
           leastDestructiveRef={cancelRef}
-          onClose={() => setIsOpen(false)}
+          onClose={() => setIsAlertOpen(false)}
+          isCentered
         >
           <AlertDialogOverlay>
             <AlertDialogContent w="90%" pos="center">
@@ -547,7 +611,7 @@ const AddOrder = () => {
               </AlertDialogBody>
 
               <AlertDialogFooter>
-                <Button ref={cancelRef} onClick={() => setIsOpen(false)}>
+                <Button ref={cancelRef} onClick={() => setIsAlertOpen(false)}>
                   Cancel
                 </Button>
                 <Button colorScheme="green" ml={3} onClick={addOrder}>

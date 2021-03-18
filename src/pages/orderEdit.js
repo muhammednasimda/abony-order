@@ -102,7 +102,7 @@ const OrderEdit = (props) => {
       setIsLoading(false);
       setTimeout(() => {
         onClose();
-        history.push("/orderlist");
+        history.push("/");
       }, 2000);
     }
 

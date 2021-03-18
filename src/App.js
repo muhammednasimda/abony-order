@@ -9,9 +9,9 @@ function App() {
     <>
       <Router>
         <Switch>
-          <Route path="/addorder" component={AddOrder} />
-          <Route path="/orderlist" component={OrderList} />
-          <Route path="/orderedit/:id" component={OrderEdit} />
+          <Route exact path="/addorder" component={AddOrder} />
+          <Route exact path="/" component={OrderList} />
+          <Route exact path="/orderedit/:id" component={OrderEdit} />
         </Switch>
       </Router>
     </>

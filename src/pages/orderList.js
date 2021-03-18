@@ -15,8 +15,9 @@ import {
   Input,
   InputRightElement,
   Button,
+  IconButton,
 } from "@chakra-ui/react";
-import { SearchIcon } from "@chakra-ui/icons";
+import { AddIcon, PlusSquareIcon, SearchIcon } from "@chakra-ui/icons";
 import Fonts from "../components/Fonts";
 
 const OrderList = () => {
@@ -161,6 +162,21 @@ const OrderList = () => {
           : searchedOrders.map((order) => (
               <OrderCard order={order} key={order.id} />
             ))}
+        <IconButton
+          size="lg"
+          p="10px"
+          backgroundColor="teal"
+          h={70}
+          w={70}
+          borderRadius={100}
+          right="0"
+          margin="30px"
+          padding="5px"
+          position="fixed"
+          bottom="0"
+          icon={<AddIcon color="white" w={7} h={7} />}
+          onClick={() => history.push("/addorder")}
+        />
       </div>
     </>
   );
