@@ -14,7 +14,16 @@ import {
   ExternalLinkIcon,
 } from "@chakra-ui/icons";
 
-import { Badge, Img, InputRightElement } from "@chakra-ui/react";
+import {
+  Badge,
+  Img,
+  InputRightElement,
+  Modal,
+  ModalBody,
+  ModalContent,
+  ModalOverlay,
+  Spinner,
+} from "@chakra-ui/react";
 
 import Popup from "reactjs-popup";
 import "reactjs-popup/dist/index.css";
@@ -56,6 +65,7 @@ const OrderEdit = (props) => {
   const [isOpenAlert, setIsOpenAlert] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const cancelRef = useRef();
+  const { isOpen, onOpen, onClose } = useDisclosure();
   const history = useHistory();
 
   const productId = props.match.params.id;
@@ -77,19 +87,51 @@ const OrderEdit = (props) => {
   }, []);
 
   const updateOrder = async () => {
+    setIsOpenAlert(false);
+    onOpen();
     const { id, order_products, ...updatedOrderDetails } = orderDetails;
+    setIsLoading(true);
     console.log(updatedOrderDetails);
     const { data, error } = await supabase
       .from("orders")
       .update(updatedOrderDetails)
       .eq("id", orderDetails.id);
+
+    if (!error) setIsLoading(false);
     console.log(error);
+  };
+
+  const LoadingCard = () => {
+    return (
+      <Modal
+        isOpen={isOpen}
+        onClose={onClose}
+        closeOnOverlayClick={false}
+        width="10"
+        size="xs"
+        isCentered
+      >
+        <ModalOverlay />
+        <ModalContent w="130px" height="130px" borderRadius="20px">
+          <ModalBody alignSelf="center" mt="25%">
+            <Spinner
+              thickness="4px"
+              speed="0.65s"
+              emptyColor="gray.200"
+              color="blue.500"
+              size="xl"
+            />
+          </ModalBody>
+        </ModalContent>
+      </Modal>
+    );
   };
 
   return (
     <>
       <Header title="Order Edit" />
       <div className={styles.container_orderedit}>
+        <LoadingCard />
         <Box borderRadius="10px" backgroundColor="white" p="10px" margin="5px">
           <Stack direction="row" justifyContent="space-between">
             <Heading color="#29283C" fontSize="18px" fontWeight="600">
@@ -330,6 +372,7 @@ const OrderEdit = (props) => {
           p="10px"
           margin="5px"
           mt="15px"
+          mb="100px"
         >
           <Stack direction="row" justifyContent="space-between">
             <Heading color="#29283C" fontSize="18px" fontWeight="600">
@@ -452,16 +495,19 @@ const OrderEdit = (props) => {
         </Box>
 
         <Button
+          position="fixed"
+          bottom="0"
           colorScheme="teal"
           variant="solid"
           size="xs"
-          w="100%"
+          w="92%"
+          height="50px"
           padding="6"
           mt="6"
           mb="6"
           isLoading={isLoading}
           loadingText="Uploading"
-          onClick={updateOrder}
+          onClick={() => setIsOpenAlert(true)}
         >
           Update order
         </Button>
@@ -469,23 +515,24 @@ const OrderEdit = (props) => {
           isOpen={isOpenAlert}
           leastDestructiveRef={cancelRef}
           onClose={() => setIsOpenAlert(false)}
+          isCentered
         >
           <AlertDialogOverlay>
             <AlertDialogContent w="90%" pos="center">
               <AlertDialogHeader fontSize="lg" fontWeight="bold">
-                Add Order
+                Update Order
               </AlertDialogHeader>
 
               <AlertDialogBody>
-                Are you sure you want to add this order ?
+                Are you sure you want to update this order ?
               </AlertDialogBody>
 
               <AlertDialogFooter>
                 <Button ref={cancelRef} onClick={() => setIsOpenAlert(false)}>
                   Cancel
                 </Button>
-                <Button colorScheme="green" ml={3}>
-                  Add
+                <Button colorScheme="green" ml={3} onClick={updateOrder}>
+                  Update
                 </Button>
               </AlertDialogFooter>
             </AlertDialogContent>
