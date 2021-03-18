@@ -16,6 +16,7 @@ import {
 
 import {
   Badge,
+  Flex,
   Img,
   InputRightElement,
   Modal,
@@ -97,7 +98,14 @@ const OrderEdit = (props) => {
       .update(updatedOrderDetails)
       .eq("id", orderDetails.id);
 
-    if (!error) setIsLoading(false);
+    if (!error) {
+      setIsLoading(false);
+      setTimeout(() => {
+        onClose();
+        history.push("/orderlist");
+      }, 2000);
+    }
+
     console.log(error);
   };
 
@@ -112,15 +120,33 @@ const OrderEdit = (props) => {
         isCentered
       >
         <ModalOverlay />
+
         <ModalContent w="130px" height="130px" borderRadius="20px">
-          <ModalBody alignSelf="center" mt="25%">
-            <Spinner
-              thickness="4px"
-              speed="0.65s"
-              emptyColor="gray.200"
-              color="blue.500"
-              size="xl"
-            />
+          <ModalBody>
+            <Flex w="100%" h="100%" justifyContent="center" alignItems="center">
+              {isLoading ? (
+                <Spinner size="lg" />
+              ) : (
+                <svg
+                  class={styles.checkmark}
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 52 52"
+                >
+                  <circle
+                    class={styles.checkmark__circle}
+                    cx="26"
+                    cy="26"
+                    r="25"
+                    fill="none"
+                  />
+                  <path
+                    class={styles.checkmark__check}
+                    fill="none"
+                    d="M14.1 27.2l7.1 7.2 16.7-16.8"
+                  />
+                </svg>
+              )}
+            </Flex>
           </ModalBody>
         </ModalContent>
       </Modal>
