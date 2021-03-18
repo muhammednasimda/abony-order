@@ -36,7 +36,7 @@
   width: 100%;
 }
 .container_orderedit {
-  background-color: #F2F3F8;
+  background-color: #f2f3f8;
   padding: 15px;
   margin-top: 60px;
   width: 100%;
@@ -46,7 +46,7 @@
 // input[type="file"] {
 //   display: none;
 // }
-.fileUpload{
+.fileUpload {
   margin-top: 15px;
 }
 .customFileUpload {
@@ -65,4 +65,10 @@
   align-items: center;
   justify-content: center;
   margin-right: 6px;
+}
+
+.product_image {
+  object-fit: cover;
+  width: 100px;
+  height: 100px;
 }

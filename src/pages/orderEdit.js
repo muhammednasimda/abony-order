@@ -4,6 +4,8 @@ import { useHistory } from "react-router-dom";
 import supabase from "../supabase";
 import "react-datepicker/dist/react-datepicker.css";
 import DatePicker from "react-date-picker";
+import qricon from "../assets/qricon.png";
+
 import {
   CloseIcon,
   AddIcon,
@@ -12,17 +14,7 @@ import {
   ExternalLinkIcon,
 } from "@chakra-ui/icons";
 
-import {
-  Modal,
-  ModalOverlay,
-  ModalContent,
-  ModalHeader,
-  ModalFooter,
-  ModalBody,
-  ModalCloseButton,
-  Badge,
-  Img,
-} from "@chakra-ui/react";
+import { Badge, Img, InputRightElement } from "@chakra-ui/react";
 
 import Popup from "reactjs-popup";
 import "reactjs-popup/dist/index.css";
@@ -63,12 +55,9 @@ const OrderEdit = (props) => {
   const [orderDetails, setOrderDetails] = useState({});
   const [isOpenAlert, setIsOpenAlert] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [modalTitle, setModalTitle] = useState("");
-
-  const [editContent, setEditContent] = useState();
   const cancelRef = useRef();
   const history = useHistory();
-  const { isOpen, onOpen, onClose } = useDisclosure();
+
   const productId = props.match.params.id;
 
   const btnRef = useRef();
@@ -87,37 +76,76 @@ const OrderEdit = (props) => {
     fetchData();
   }, []);
 
-  //drawer
-  const DrawerCard = () => {
-    return (
-      <>
-        <Modal
-          blockScrollOnMount={false}
-          finalFocusRef={btnRef}
-          isOpen={isOpen}
-          onClose={onClose}
-        >
-          <ModalOverlay />
-          <ModalContent>
-            <ModalHeader>{modalTitle}</ModalHeader>
-            <ModalCloseButton />
-            <ModalBody>{editContent && editContent}</ModalBody>
-          </ModalContent>
-        </Modal>
-      </>
-    );
+  const updateOrder = async () => {
+    const { id, order_products, ...updatedOrderDetails } = orderDetails;
+    console.log(updatedOrderDetails);
+    const { data, error } = await supabase
+      .from("orders")
+      .update(updatedOrderDetails)
+      .eq("id", orderDetails.id);
+    console.log(error);
   };
 
   return (
     <>
       <Header title="Order Edit" />
       <div className={styles.container_orderedit}>
-        <DrawerCard />
-
         <Box borderRadius="10px" backgroundColor="white" p="10px" margin="5px">
-          <Heading color="#29283C" fontSize="18px" fontWeight="600">
-            Order Details
-          </Heading>
+          <Stack direction="row" justifyContent="space-between">
+            <Heading color="#29283C" fontSize="18px" fontWeight="600">
+              Order Details
+            </Heading>
+
+            <Popup
+              lockScroll="true"
+              trigger={<IconButton icon={<EditIcon />} size="sm" />}
+              modal
+              contentStyle={{ width: "80vw", borderRadius: "10px" }}
+            >
+              <Box borderRadius="10px" p="15px">
+                <FormLabel mt="10px">Order Status</FormLabel>
+                <Select
+                  value={orderDetails.order_status}
+                  onChange={(e) => {
+                    setOrderDetails((old) => ({
+                      ...old,
+                      order_status: e.target.value,
+                    }));
+                  }}
+                  mb="20px"
+                >
+                  <option value="RECIEVED">RECIEVED</option>
+                  <option value="PACKED">PACKED</option>
+                  <option value="SHIPPED">SHIPPED</option>
+                  <option value="RETURNED">RETURNED</option>
+                </Select>
+                <FormLabel mt="10px"> Payment Status</FormLabel>
+                <Switch
+                  size="lg"
+                  isChecked={orderDetails.payment_status}
+                  onChange={(e) => {
+                    setOrderDetails((old) => ({
+                      ...old,
+                      payment_status: !orderDetails.payment_status,
+                    }));
+                  }}
+                  mb="20px"
+                />
+
+                <FormLabel mt="10px">Remarks</FormLabel>
+                <Textarea
+                  value={orderDetails.order_remark || ""}
+                  onChange={(e) =>
+                    setOrderDetails((old) => ({
+                      ...orderDetails,
+                      order_remark: e.target.value,
+                    }))
+                  }
+                  size="lg"
+                />
+              </Box>
+            </Popup>
+          </Stack>
           <Stack direction="row" mt="2">
             <Text color="#757575" fontWeight="500">
               Date :
@@ -151,35 +179,6 @@ const OrderEdit = (props) => {
             >
               {orderDetails.order_status}
             </Badge>
-
-            <IconButton
-              icon={<EditIcon />}
-              size="sm"
-              onClick={() => {
-                setModalTitle("Order Status");
-                setEditContent(
-                  <>
-                    <Select
-                      value={orderDetails.order_status}
-                      onChange={(e) => {
-                        setOrderDetails((old) => ({
-                          ...old,
-                          order_status: e.target.value,
-                        }));
-                        onClose();
-                      }}
-                      mb="20px"
-                    >
-                      <option value="RECIEVED">RECIEVED</option>
-                      <option value="PACKED">PACKED</option>
-                      <option value="SHIPPED">SHIPPED</option>
-                      <option value="RETURNED">RETURNED</option>
-                    </Select>
-                  </>
-                );
-                onOpen();
-              }}
-            />
           </Stack>
           <Stack direction="row" mt="2">
             <Text color="#757575" fontWeight="500">
@@ -211,30 +210,6 @@ const OrderEdit = (props) => {
             >
               {orderDetails.payment_status ? "PAID" : "UNPAID"}
             </Badge>
-            <IconButton
-              icon={<EditIcon />}
-              size="sm"
-              onClick={() => {
-                setModalTitle("Payment Status");
-                setEditContent(
-                  <>
-                    <Switch
-                      size="lg"
-                      isChecked={orderDetails.payment_status}
-                      onChange={(e) => {
-                        setOrderDetails((old) => ({
-                          ...old,
-                          payment_status: !orderDetails.payment_status,
-                        }));
-                        onClose();
-                      }}
-                      mb="20px"
-                    />
-                  </>
-                );
-                onOpen();
-              }}
-            />
           </Stack>
           <Stack direction="row" mt="2">
             <Text color="#757575" fontWeight="500">
@@ -243,7 +218,13 @@ const OrderEdit = (props) => {
             <Text colorScheme="black">{orderDetails.order_remark}</Text>
           </Stack>
         </Box>
-        <Box borderRadius="10px" backgroundColor="white" p="10px" margin="5px">
+        <Box
+          borderRadius="10px"
+          backgroundColor="white"
+          p="10px"
+          margin="5px"
+          mt="15px"
+        >
           <Heading color="#29283C" fontSize="18px" fontWeight="600">
             Customer Details
           </Heading>
@@ -287,17 +268,29 @@ const OrderEdit = (props) => {
           </Stack>
         </Box>
 
-        <Box borderRadius="10px" backgroundColor="white" p="10px" margin="5px">
+        <Box
+          borderRadius="10px"
+          backgroundColor="white"
+          p="10px"
+          margin="5px"
+          mt="10px"
+        >
           <Heading color="#29283C" fontSize="18px" fontWeight="600" mb="10px">
             Order Products
           </Heading>
           {orderDetails.order_products &&
             orderDetails.order_products.map((product) => (
-              <Box borderRadius="5px" borderWidth="2px" p="10px" mb="8px">
+              <Box
+                borderRadius="5px"
+                borderWidth="2px"
+                p="10px"
+                mb="8px"
+                key={product.id}
+              >
                 <Stack direction="row">
                   <Img
-                    w="100px"
-                    src="https://picsum.photos/200"
+                    className={styles.product_image}
+                    src={`https://firebasestorage.googleapis.com/v0/b/abony-cd5c4.appspot.com/o/${product.product_image}?alt=media`}
                     borderRadius="10px"
                   />
                   <Stack direction="column" spacing="0px">
@@ -331,7 +324,13 @@ const OrderEdit = (props) => {
             ))}
         </Box>
 
-        <Box borderRadius="10px" backgroundColor="white" p="10px" margin="5px">
+        <Box
+          borderRadius="10px"
+          backgroundColor="white"
+          p="10px"
+          margin="5px"
+          mt="15px"
+        >
           <Stack direction="row" justifyContent="space-between">
             <Heading color="#29283C" fontSize="18px" fontWeight="600">
               Courier Details
@@ -340,67 +339,75 @@ const OrderEdit = (props) => {
               lockScroll="true"
               modal="true"
               trigger={<IconButton icon={<EditIcon />} size="sm" />}
-              position="right center"
+              contentStyle={{ width: "80vw", borderRadius: "10px" }}
             >
               <>
-                <FormLabel>Shipping Partner</FormLabel>
-                <Select
-                  value={orderDetails.shipping_partner}
-                  onChange={(e) => {
-                    setOrderDetails((old) => ({
-                      ...old,
-                      shipping_partner: e.target.value,
-                    }));
-                  }}
-                  mb="20px"
-                >
-                  <option value="">NONE</option>
-                  <option value="DELHIVERY">DELHIVERY</option>
-                  <option value="DTDC">DTDC</option>
-                  <option value="SHIPROCKET">SHIPROCKET</option>
-                  <option value="HAND">HAND</option>
-                </Select>
-                <FormLabel>AWB Number</FormLabel>
-                <Input
-                  type="text"
-                  onChange={(e) => {
-                    setOrderDetails((old) => ({
-                      ...old,
-                      shipping_awb: e.target.value,
-                    }));
-                  }}
-                />
+                <Box p="15px">
+                  <FormLabel>Shipping Partner</FormLabel>
+                  <Select
+                    value={orderDetails.shipping_partner || ""}
+                    onChange={(e) => {
+                      setOrderDetails((old) => ({
+                        ...old,
+                        shipping_partner: e.target.value,
+                      }));
+                    }}
+                    mb="20px"
+                  >
+                    <option value="none">NONE</option>
+                    <option value="DELHIVERY">DELHIVERY</option>
+                    <option value="DTDC">DTDC</option>
+                    <option value="SHIPROCKET">SHIPROCKET</option>
+                    <option value="HAND">HAND</option>
+                  </Select>
+                  <FormLabel>AWB Number</FormLabel>
+                  <InputGroup size="lg">
+                    <Input
+                      type="text"
+                      value={orderDetails.shipping_awb || ""}
+                      onChange={(e) => {
+                        setOrderDetails((old) => ({
+                          ...old,
+                          shipping_awb: e.target.value,
+                        }));
+                      }}
+                    />
+                    <InputRightElement width="4.5rem">
+                      <IconButton icon={<Img src={qricon} w="20px" />} />
+                    </InputRightElement>
+                  </InputGroup>
 
-                <FormLabel mt="5"> Shipping charge</FormLabel>
-                <Input
-                  type="number"
-                  defaultValue={orderDetails.shipping_charge}
-                  onChange={(e) =>
-                    setOrderDetails({
-                      ...orderDetails,
-                      shipping_charge: e.target.value,
-                    })
-                  }
-                />
-                <FormLabel>Shipping Date :</FormLabel>
-                <DatePicker
-                  format="dd/MM/yyyy"
-                  value={orderDetails.shipping_date}
-                  onChange={(date) => {
-                    setOrderDetails({ ...orderDetails, shipping_date: date });
-                  }}
-                />
-                <FormLabel>Delivered Date :</FormLabel>
-                <DatePicker
-                  format="dd/MM/yyyy"
-                  value={orderDetails.shipping_delivered_date}
-                  onChange={(date) => {
-                    setOrderDetails({
-                      ...orderDetails,
-                      shipping_delivered_date: date,
-                    });
-                  }}
-                />
+                  <FormLabel mt="5"> Shipping charge</FormLabel>
+                  <Input
+                    type="number"
+                    value={orderDetails.shipping_charge || ""}
+                    onChange={(e) =>
+                      setOrderDetails({
+                        ...orderDetails,
+                        shipping_charge: e.target.value,
+                      })
+                    }
+                  />
+                  <FormLabel mt="10px">Shipping Date :</FormLabel>
+                  <DatePicker
+                    format="dd/MM/yyyy"
+                    value={orderDetails.shipping_date || ""}
+                    onChange={(date) => {
+                      setOrderDetails({ ...orderDetails, shipping_date: date });
+                    }}
+                  />
+                  <FormLabel mt="15px">Delivered Date :</FormLabel>
+                  <DatePicker
+                    format="dd/MM/yyyy"
+                    value={orderDetails.shipping_delivered_date || ""}
+                    onChange={(date) => {
+                      setOrderDetails({
+                        ...orderDetails,
+                        shipping_delivered_date: date,
+                      });
+                    }}
+                  />
+                </Box>
               </>
             </Popup>
           </Stack>
@@ -426,14 +433,20 @@ const OrderEdit = (props) => {
             <Text color="#757575" fontWeight="500">
               Shipping Date :
             </Text>
-            <Text colorScheme="black">{orderDetails.shipping_date}</Text>
+            <Text colorScheme="black">
+              {orderDetails.shipping_date &&
+                new Date(orderDetails.shipping_date).toLocaleDateString()}
+            </Text>
           </Stack>
           <Stack direction="row" mt="2">
             <Text color="#757575" fontWeight="500">
-              Shipping Delivered Date :
+              Delivered Date :
             </Text>
             <Text colorScheme="black">
-              {orderDetails.shipping_delivered_date}
+              {orderDetails.shipping_delivered_date &&
+                new Date(
+                  orderDetails.shipping_delivered_date
+                ).toLocaleDateString()}
             </Text>
           </Stack>
         </Box>
@@ -448,6 +461,7 @@ const OrderEdit = (props) => {
           mb="6"
           isLoading={isLoading}
           loadingText="Uploading"
+          onClick={updateOrder}
         >
           Update order
         </Button>
