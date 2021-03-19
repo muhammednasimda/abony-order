@@ -2,7 +2,7 @@ import { React, useRef, useState, useEffect } from "react";
 import styles from "./css/addOrder.module.scss";
 import { useHistory } from "react-router-dom";
 import supabase from "../supabase";
-import "react-datepicker/dist/react-datepicker.css";
+
 import DatePicker from "react-date-picker";
 import qricon from "../assets/qricon.png";
 
@@ -195,7 +195,7 @@ const OrderEdit = (props) => {
             <Heading color="#29283C" fontSize="18px" fontWeight="600">
               Order Details
             </Heading>
-            <Button onClick={runBrain}>Run Brain</Button>
+
             <Popup
               lockScroll={true}
               closeOnDocumentClick={false}

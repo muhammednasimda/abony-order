@@ -7,7 +7,7 @@ import backIcon from "../assets/backIcon.png";
 import { useFormLocal } from "../components/useFormLocal";
 import DatePicker from "react-date-picker";
 import supabase from "../supabase";
-import "react-datepicker/dist/react-datepicker.css";
+
 import { CloseIcon, AddIcon } from "@chakra-ui/icons";
 import firebase from "../firebase";
 import {

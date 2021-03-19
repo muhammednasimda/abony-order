@@ -1,9 +1,7 @@
 import { React, useRef, useState, useEffect } from "react";
 import styles from "./css/addOrder.module.scss";
-import { useFormLocal } from "../components/useFormLocal";
-import DatePicker from "react-date-picker";
 import supabase from "../supabase";
-import "react-datepicker/dist/react-datepicker.css";
+
 import { useHistory } from "react-router-dom";
 import backIcon from "../assets/backIcon.png";
 import { Box, Flex, Stack } from "@chakra-ui/layout";
