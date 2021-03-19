@@ -59,7 +59,7 @@ import {
   Text,
   useDisclosure,
 } from "@chakra-ui/react";
-import BarCodeScanner from "barcode-react-scanner";
+
 import Header from "../components/Header";
 
 import BarcodeScannerComponent from "react-webcam-barcode-scanner";
@@ -72,7 +72,6 @@ const OrderEdit = (props) => {
   const [isBarcodeOpen, setIsBarcodeOpen] = useState(false);
   const [popupImage, setPopupImage] = useState("");
   const [qrResult, setQrResult] = useState("");
-
   const cancelRef = useRef();
   const { isOpen, onOpen, onClose } = useDisclosure();
   const {
@@ -577,14 +576,14 @@ const OrderEdit = (props) => {
                     </InputRightElement>
                   </InputGroup>
                   {isBarcodeOpen && (
-                    <BarCodeScanner
+                    <BarcodeScannerComponent
                       width={500}
                       height={50}
                       onUpdate={(err, result) => {
                         if (result) {
                           setOrderDetails((old) => ({
                             ...old,
-                            shipping_awb: result.getText(),
+                            shipping_awb: result.text,
                           }));
                           setIsBarcodeOpen(false);
                         } else setQrResult("Not Found");
