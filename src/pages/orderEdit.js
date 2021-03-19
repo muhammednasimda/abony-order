@@ -69,6 +69,7 @@ const OrderEdit = (props) => {
   const [orderDetails, setOrderDetails] = useState({});
   const [isOpenAlert, setIsOpenAlert] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [isBarcodeOpen, setIsBarcodeOpen] = useState(false);
   const [popupImage, setPopupImage] = useState("");
   const [qrResult, setQrResult] = useState("");
   const cancelRef = useRef();
@@ -303,14 +304,7 @@ const OrderEdit = (props) => {
               })}
             </Text>
           </Stack>
-          <BarcodeScannerComponent
-            width={500}
-            height={500}
-            onUpdate={(err, result) => {
-              if (result) setQrResult(result.text);
-              else setQrResult("Not Found");
-            }}
-          />
+
           <p>{qrResult}</p>
 
           <Stack direction="row" mt="2">
@@ -573,11 +567,29 @@ const OrderEdit = (props) => {
                         }));
                       }}
                     />
+
                     <InputRightElement width="4.5rem">
-                      <IconButton icon={<Img src={qricon} w="20px" />} />
+                      <IconButton
+                        icon={<Img src={qricon} w="20px" />}
+                        onClick={() => setIsBarcodeOpen(true)}
+                      />
                     </InputRightElement>
                   </InputGroup>
-
+                  {isBarcodeOpen && (
+                    <BarcodeScannerComponent
+                      width={500}
+                      height={100}
+                      onUpdate={(err, result) => {
+                        if (result) {
+                          setOrderDetails((old) => ({
+                            ...old,
+                            shipping_awb: result.text,
+                          }));
+                          setIsBarcodeOpen(false);
+                        } else setQrResult("Not Found");
+                      }}
+                    />
+                  )}
                   <FormLabel mt="5"> Shipping charge</FormLabel>
                   <Input
                     type="number"
