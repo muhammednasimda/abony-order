@@ -14,7 +14,7 @@ import {
   ExternalLinkIcon,
 } from "@chakra-ui/icons";
 
-import QrReader from "react-qr-reader";
+import BarcodeReader from "react-barcode-reader";
 
 import {
   Badge,
@@ -301,8 +301,7 @@ const OrderEdit = (props) => {
               })}
             </Text>
           </Stack>
-          <QrReader
-            delay={300}
+          <BarcodeReader
             onScan={(data) => SetQrResult(data)}
             style={{ width: "100%" }}
           />
