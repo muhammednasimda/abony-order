@@ -218,35 +218,42 @@ const OrderEdit = (props) => {
                     <option value="SHIPPED">SHIPPED</option>
                     <option value="CANCELLED">CANCELLED</option>
                     <option value="RETURNED">RETURNED</option>
+                    <option value="REFUNDED">REFUNDED</option>
                   </Select>
-                  <FormLabel mt="10px"> Payment Status</FormLabel>
-                  <Switch
-                    size="lg"
-                    isChecked={orderDetails.payment_status}
-                    onChange={(e) => {
-                      setOrderDetails((old) => ({
-                        ...old,
-                        payment_status: !orderDetails.payment_status,
-                      }));
-                    }}
-                    mb="20px"
-                  />
-                  <FormLabel>Payment To :</FormLabel>
-                  <Select
-                    name="payment_to"
-                    size="lg"
-                    mb="5"
-                    value={orderDetails.payment_to || ""}
-                    onChange={(e) => {
-                      setOrderDetails((old) => ({
-                        ...old,
-                        payment_to: e.target.value,
-                      }));
-                    }}
-                  >
-                    <option value="nasim">Nasim</option>
-                    <option value="company">Company</option>
-                  </Select>
+
+                  {orderDetails.payment_mode !== "COD" && (
+                    <>
+                      <FormLabel mt="10px"> Payment Status</FormLabel>
+                      <Switch
+                        size="lg"
+                        isChecked={orderDetails.payment_status}
+                        onChange={(e) => {
+                          setOrderDetails((old) => ({
+                            ...old,
+                            payment_status: !orderDetails.payment_status,
+                          }));
+                        }}
+                        mb="20px"
+                      />
+
+                      <FormLabel>Payment To :</FormLabel>
+                      <Select
+                        name="payment_to"
+                        size="lg"
+                        mb="5"
+                        value={orderDetails.payment_to || ""}
+                        onChange={(e) => {
+                          setOrderDetails((old) => ({
+                            ...old,
+                            payment_to: e.target.value,
+                          }));
+                        }}
+                      >
+                        <option value="nasim">Nasim</option>
+                        <option value="company">Company</option>
+                      </Select>
+                    </>
+                  )}
                   <FormLabel mt="10px">Remarks</FormLabel>
                   <Textarea
                     value={orderDetails.order_remark || ""}
@@ -274,6 +281,12 @@ const OrderEdit = (props) => {
           </Stack>
           <Stack direction="row" mt="2">
             <Text color="#757575" fontWeight="500">
+              Order Id :
+            </Text>
+            <Text colorScheme="black">{orderDetails.id}</Text>
+          </Stack>
+          <Stack direction="row" mt="2">
+            <Text color="#757575" fontWeight="500">
               Date :
             </Text>
             <Text colorScheme="black">
@@ -285,6 +298,7 @@ const OrderEdit = (props) => {
               })}
             </Text>
           </Stack>
+
           <Stack direction="row" mt="2">
             <Text color="#757575" fontWeight="500">
               Status :
@@ -394,6 +408,12 @@ const OrderEdit = (props) => {
               size="sm"
               onClick={() => window.open(`tel:${orderDetails.customer_phone}`)}
             />
+          </Stack>
+          <Stack direction="row" mt="2">
+            <Text color="#757575" fontWeight="500">
+              Pincode :
+            </Text>
+            <Text colorScheme="black">{orderDetails.customer_pincode}</Text>
           </Stack>
           <Stack direction="row" mt="2">
             <Text color="#757575" fontWeight="500">

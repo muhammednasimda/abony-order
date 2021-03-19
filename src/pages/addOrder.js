@@ -220,7 +220,8 @@ const AddOrder = () => {
       order.customer_name ||
       order.customer_instagram ||
       order.customer_phone ||
-      order.customer_address
+      order.customer_address ||
+      order.customer_pincode
     ) {
       //validate order products
       const isproducts = orderProducts.filter(
@@ -307,16 +308,30 @@ const AddOrder = () => {
             onChange={updateOrder}
           />
         </FormControl>
-        <FormControl w="90%" mt="2" isRequired>
-          <FormLabel>Mobile :</FormLabel>
-          <Input
-            type="number"
-            size="lg"
-            name="customer_phone"
-            value={order.customer_phone || ""}
-            onChange={updateOrder}
-          />
-        </FormControl>
+
+        <Stack direction="row" w="90%" mt="5">
+          <FormControl w="40%" isRequired>
+            <FormLabel>Pincode :</FormLabel>
+            <Input
+              type="number"
+              size="lg"
+              name="customer_pincode"
+              value={order.customer_pincode || ""}
+              onChange={updateOrder}
+            />
+          </FormControl>
+          <FormControl w="60%" isRequired>
+            <FormLabel>Mobile :</FormLabel>
+            <Input
+              type="number"
+              size="lg"
+              name="customer_phone"
+              value={order.customer_phone || ""}
+              onChange={updateOrder}
+            />
+          </FormControl>
+        </Stack>
+
         <FormControl id="customer_address" w="90%" mt="2" isRequired>
           <FormLabel>Address :</FormLabel>
           <Textarea

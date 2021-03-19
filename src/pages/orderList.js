@@ -41,7 +41,7 @@ const OrderList = () => {
     const { data, error } = await supabase
       .from("orders")
       .select(`*,order_products (*)`)
-      .ilike("customer_name", `%${searchValue}%`)
+      .ilike(`customer_name,id`, `%${searchValue}%`)
       .order("id", { ascending: false });
     console.log(error);
     console.log(data);
@@ -69,7 +69,7 @@ const OrderList = () => {
         borderRadius="lg"
         onClick={() => history.push(`/orderedit/${order.id}`)}
       >
-        <Flex>
+        <Flex height="auto" p="5px">
           {order.order_products.length > 0 ? (
             <Image
               p="5px"
@@ -88,6 +88,17 @@ const OrderList = () => {
             />
           )}
           <Flex flexDirection="column" ml="3" mt="1">
+            <Stack direction="row">
+              <Badge
+                fontSize={15}
+                variant="outline"
+                alignSelf="start"
+                colorScheme="gray"
+                color="black"
+              >
+                Order id: {order.id}
+              </Badge>
+            </Stack>
             <Text fontSize="lg" fontWeight="medium">
               {order.customer_name}
             </Text>
