@@ -62,13 +62,15 @@ import {
 
 import Header from "../components/Header";
 
+import BarcodeScannerComponent from "react-webcam-barcode-scanner";
+
 //product.product_image is treated as id for product
 const OrderEdit = (props) => {
   const [orderDetails, setOrderDetails] = useState({});
   const [isOpenAlert, setIsOpenAlert] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [popupImage, setPopupImage] = useState("");
-  const [qrResult, SetQrResult] = useState("");
+  const [qrResult, setQrResult] = useState("");
   const cancelRef = useRef();
   const { isOpen, onOpen, onClose } = useDisclosure();
   const {
@@ -301,9 +303,13 @@ const OrderEdit = (props) => {
               })}
             </Text>
           </Stack>
-          <BarcodeReader
-            onScan={(data) => SetQrResult(data)}
-            style={{ width: "100%" }}
+          <BarcodeScannerComponent
+            width={500}
+            height={500}
+            onUpdate={(err, result) => {
+              if (result) setQrResult(result.text);
+              else setQrResult("Not Found");
+            }}
           />
           <p>{qrResult}</p>
 
