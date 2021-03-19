@@ -581,7 +581,7 @@ const AddOrder = () => {
         <Button
           colorScheme="teal"
           variant="solid"
-          size="xs"
+          size="lg"
           w="90%"
           padding="6"
           mt="6"

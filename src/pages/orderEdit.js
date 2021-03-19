@@ -65,8 +65,14 @@ const OrderEdit = (props) => {
   const [orderDetails, setOrderDetails] = useState({});
   const [isOpenAlert, setIsOpenAlert] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [popupImage, setPopupImage] = useState("");
   const cancelRef = useRef();
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const {
+    isOpen: isImageOpen,
+    onOpen: onImageOpen,
+    onClose: onImageClose,
+  } = useDisclosure();
   const history = useHistory();
 
   const productId = props.match.params.id;
@@ -107,6 +113,27 @@ const OrderEdit = (props) => {
     }
 
     console.log(error);
+  };
+
+  const handleImageClick = (imageUrl) => {
+    setPopupImage(imageUrl);
+    onImageOpen();
+  };
+
+  const ImageModal = () => {
+    return (
+      <Modal isOpen={isImageOpen} onClose={onImageClose} size="lg" isCentered>
+        <ModalOverlay />
+
+        <ModalContent w="90%" borderRadius="20px">
+          <ModalBody>
+            <Flex w="100%" h="100%" justifyContent="center" alignItems="center">
+              <Img src={popupImage} />
+            </Flex>
+          </ModalBody>
+        </ModalContent>
+      </Modal>
+    );
   };
 
   const LoadingCard = () => {
@@ -158,6 +185,7 @@ const OrderEdit = (props) => {
       <Header title="Order Edit" />
       <div className={styles.container_orderedit}>
         <LoadingCard />
+        <ImageModal />
         <Box borderRadius="10px" backgroundColor="white" p="10px" margin="5px">
           <Stack direction="row" justifyContent="space-between">
             <Heading color="#29283C" fontSize="18px" fontWeight="600">
@@ -165,53 +193,83 @@ const OrderEdit = (props) => {
             </Heading>
 
             <Popup
-              lockScroll="true"
+              lockScroll={true}
+              closeOnDocumentClick={false}
               trigger={<IconButton icon={<EditIcon />} size="sm" />}
               modal
               contentStyle={{ width: "80vw", borderRadius: "10px" }}
+              nested
             >
-              <Box borderRadius="10px" p="15px">
-                <FormLabel mt="10px">Order Status</FormLabel>
-                <Select
-                  value={orderDetails.order_status}
-                  onChange={(e) => {
-                    setOrderDetails((old) => ({
-                      ...old,
-                      order_status: e.target.value,
-                    }));
-                  }}
-                  mb="20px"
-                >
-                  <option value="RECIEVED">RECIEVED</option>
-                  <option value="PACKED">PACKED</option>
-                  <option value="SHIPPED">SHIPPED</option>
-                  <option value="RETURNED">RETURNED</option>
-                </Select>
-                <FormLabel mt="10px"> Payment Status</FormLabel>
-                <Switch
-                  size="lg"
-                  isChecked={orderDetails.payment_status}
-                  onChange={(e) => {
-                    setOrderDetails((old) => ({
-                      ...old,
-                      payment_status: !orderDetails.payment_status,
-                    }));
-                  }}
-                  mb="20px"
-                />
+              {(close) => (
+                <Box borderRadius="10px" p="15px">
+                  <FormLabel mt="10px">Order Status</FormLabel>
+                  <Select
+                    value={orderDetails.order_status}
+                    onChange={(e) => {
+                      setOrderDetails((old) => ({
+                        ...old,
+                        order_status: e.target.value,
+                      }));
+                    }}
+                    mb="20px"
+                  >
+                    <option value="RECIEVED">RECIEVED</option>
+                    <option value="PACKED">PACKED</option>
+                    <option value="SHIPPED">SHIPPED</option>
+                    <option value="CANCELLED">CANCELLED</option>
+                    <option value="RETURNED">RETURNED</option>
+                  </Select>
+                  <FormLabel mt="10px"> Payment Status</FormLabel>
+                  <Switch
+                    size="lg"
+                    isChecked={orderDetails.payment_status}
+                    onChange={(e) => {
+                      setOrderDetails((old) => ({
+                        ...old,
+                        payment_status: !orderDetails.payment_status,
+                      }));
+                    }}
+                    mb="20px"
+                  />
+                  <FormLabel>Payment To :</FormLabel>
+                  <Select
+                    name="payment_to"
+                    size="lg"
+                    mb="5"
+                    value={orderDetails.payment_to || ""}
+                    onChange={(e) => {
+                      setOrderDetails((old) => ({
+                        ...old,
+                        payment_to: e.target.value,
+                      }));
+                    }}
+                  >
+                    <option value="nasim">Nasim</option>
+                    <option value="company">Company</option>
+                  </Select>
+                  <FormLabel mt="10px">Remarks</FormLabel>
+                  <Textarea
+                    value={orderDetails.order_remark || ""}
+                    onChange={(e) =>
+                      setOrderDetails((old) => ({
+                        ...orderDetails,
+                        order_remark: e.target.value,
+                      }))
+                    }
+                    size="lg"
+                  />
 
-                <FormLabel mt="10px">Remarks</FormLabel>
-                <Textarea
-                  value={orderDetails.order_remark || ""}
-                  onChange={(e) =>
-                    setOrderDetails((old) => ({
-                      ...orderDetails,
-                      order_remark: e.target.value,
-                    }))
-                  }
-                  size="lg"
-                />
-              </Box>
+                  <Button
+                    onClick={close}
+                    ml="65%"
+                    colorScheme="teal"
+                    mt="10px"
+                    w="100px"
+                  >
+                    Ok
+                  </Button>
+                </Box>
+              )}
             </Popup>
           </Stack>
           <Stack direction="row" mt="2">
@@ -237,7 +295,9 @@ const OrderEdit = (props) => {
               colorScheme={
                 orderDetails.order_status == "RECIEVED"
                   ? "gray"
-                  : orderDetails.order_status == "RETURNED"
+                  : ["RETURNED", "CANCELLED"].includes(
+                      orderDetails.order_status
+                    )
                   ? "red"
                   : "green"
               }
@@ -267,18 +327,29 @@ const OrderEdit = (props) => {
             </Text>
             <Text colorScheme="black">{orderDetails.payment_mode}</Text>
           </Stack>
-          <Stack direction="row" mt="2">
-            <Text color="#757575" fontWeight="500">
-              Payment Status :
-            </Text>
-            <Badge
-              variant="solid"
-              colorScheme={orderDetails.payment_status ? "green" : "red"}
-              alignSelf="center"
-            >
-              {orderDetails.payment_status ? "PAID" : "UNPAID"}
-            </Badge>
-          </Stack>
+          {orderDetails.payment_mode !== "COD" && (
+            <>
+              <Stack direction="row" mt="2">
+                <Text color="#757575" fontWeight="500">
+                  Payment Status :
+                </Text>
+                0
+                <Badge
+                  variant="solid"
+                  colorScheme={orderDetails.payment_status ? "green" : "red"}
+                  alignSelf="center"
+                >
+                  {orderDetails.payment_status ? "PAID" : "UNPAID"}
+                </Badge>
+              </Stack>
+              <Stack direction="row" mt="2">
+                <Text color="#757575" fontWeight="500">
+                  Payment To :
+                </Text>
+                <Text colorScheme="black">{orderDetails.payment_to}</Text>
+              </Stack>
+            </>
+          )}
           <Stack direction="row" mt="2">
             <Text color="#757575" fontWeight="500">
               Remarks :
@@ -293,9 +364,20 @@ const OrderEdit = (props) => {
           margin="5px"
           mt="15px"
         >
-          <Heading color="#29283C" fontSize="18px" fontWeight="600">
-            Customer Details
-          </Heading>
+          <Stack direction="row" justifyContent="space-between">
+            <Heading color="#29283C" fontSize="18px" fontWeight="600">
+              Customer Details
+            </Heading>
+            <Badge
+              justifyContent="center"
+              variant="solid"
+              colorScheme="purple"
+              alignSelf="center"
+              fontSize="15px"
+            >
+              Reseller
+            </Badge>
+          </Stack>
           <Stack direction="row" mt="2">
             <Text color="#757575" fontWeight="500">
               Name :
@@ -334,6 +416,14 @@ const OrderEdit = (props) => {
             </Text>
             <Text colorScheme="black">{orderDetails.customer_address}</Text>
           </Stack>
+          {orderDetails.is_reseller && (
+            <Stack spacing="5" direction="row" mt="2">
+              <Text color="#757575" fontWeight="500">
+                From Address :
+              </Text>
+              <Text colorScheme="black">{orderDetails.from_address}</Text>
+            </Stack>
+          )}
         </Box>
 
         <Box
@@ -357,8 +447,14 @@ const OrderEdit = (props) => {
               >
                 <Stack direction="row">
                   <Img
+                    onClick={() =>
+                      handleImageClick(
+                        `https://firebasestorage.googleapis.com/v0/b/abony-cd5c4.appspot.com/o/${product.product_image}?alt=media`
+                      )
+                    }
                     className={styles.product_image}
                     src={`https://firebasestorage.googleapis.com/v0/b/abony-cd5c4.appspot.com/o/${product.product_image}?alt=media`}
+                    fallbackSrc="https://via.placeholder.com/150"
                     borderRadius="10px"
                   />
                   <Stack direction="column" spacing="0px">
@@ -409,8 +505,10 @@ const OrderEdit = (props) => {
               modal="true"
               trigger={<IconButton icon={<EditIcon />} size="sm" />}
               contentStyle={{ width: "80vw", borderRadius: "10px" }}
+              nested
+              closeOnDocumentClick={false}
             >
-              <>
+              {(close) => (
                 <Box p="15px">
                   <FormLabel>Shipping Partner</FormLabel>
                   <Select
@@ -476,8 +574,17 @@ const OrderEdit = (props) => {
                       });
                     }}
                   />
+                  <Button
+                    onClick={close}
+                    ml="65%"
+                    colorScheme="teal"
+                    mt="10px"
+                    w="100px"
+                  >
+                    Ok
+                  </Button>
                 </Box>
-              </>
+              )}
             </Popup>
           </Stack>
           <Stack direction="row" mt="2">
@@ -525,7 +632,7 @@ const OrderEdit = (props) => {
           bottom="0"
           colorScheme="teal"
           variant="solid"
-          size="xs"
+          size="lg"
           w="92%"
           height="50px"
           padding="6"
