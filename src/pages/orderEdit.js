@@ -14,8 +14,6 @@ import {
   ExternalLinkIcon,
 } from "@chakra-ui/icons";
 
-import BarcodeReader from "react-barcode-reader";
-
 import {
   Badge,
   Flex,
@@ -197,7 +195,7 @@ const OrderEdit = (props) => {
             <Heading color="#29283C" fontSize="18px" fontWeight="600">
               Order Details
             </Heading>
-
+            <Button onClick={runBrain}>Run Brain</Button>
             <Popup
               lockScroll={true}
               closeOnDocumentClick={false}
