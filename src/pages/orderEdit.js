@@ -14,6 +14,8 @@ import {
   ExternalLinkIcon,
 } from "@chakra-ui/icons";
 
+import QrReader from "react-qr-reader";
+
 import {
   Badge,
   Flex,
@@ -66,6 +68,7 @@ const OrderEdit = (props) => {
   const [isOpenAlert, setIsOpenAlert] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [popupImage, setPopupImage] = useState("");
+  const [qrResult, SetQrResult] = useState("");
   const cancelRef = useRef();
   const { isOpen, onOpen, onClose } = useDisclosure();
   const {
@@ -298,6 +301,12 @@ const OrderEdit = (props) => {
               })}
             </Text>
           </Stack>
+          <QrReader
+            delay={300}
+            onScan={(data) => SetQrResult(data)}
+            style={{ width: "100%" }}
+          />
+          <p>{qrResult}</p>
 
           <Stack direction="row" mt="2">
             <Text color="#757575" fontWeight="500">
