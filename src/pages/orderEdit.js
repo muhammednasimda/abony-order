@@ -571,14 +571,14 @@ const OrderEdit = (props) => {
                     <InputRightElement width="4.5rem">
                       <IconButton
                         icon={<Img src={qricon} w="20px" />}
-                        onClick={() => setIsBarcodeOpen(true)}
+                        onClick={() => setIsBarcodeOpen((old) => !old)}
                       />
                     </InputRightElement>
                   </InputGroup>
                   {isBarcodeOpen && (
                     <BarcodeScannerComponent
                       width={500}
-                      height={100}
+                      height={50}
                       onUpdate={(err, result) => {
                         if (result) {
                           setOrderDetails((old) => ({
