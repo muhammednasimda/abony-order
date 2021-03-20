@@ -17,6 +17,7 @@ import {
 } from "@chakra-ui/react";
 import { AddIcon, PlusSquareIcon, SearchIcon } from "@chakra-ui/icons";
 import Fonts from "../components/Fonts";
+import Header from "../components/Header";
 
 const OrderList = () => {
   const history = useHistory();
@@ -146,12 +147,7 @@ const OrderList = () => {
 
   return (
     <>
-      <div className={styles.header}>
-        <button className={styles.backButton} onClick={() => history.goBack()}>
-          <img src={backIcon} className={styles.backIcon} alt="back_icon" />
-        </button>
-        <h1 className={styles.label}>Order List</h1>
-      </div>
+      <Header title="Order List" isBack="false" />
       <div className={styles.container}>
         <InputGroup size="lg" p="2" mt="5">
           <Input

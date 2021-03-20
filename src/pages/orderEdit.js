@@ -6,6 +6,12 @@ import supabase from "../supabase";
 import DatePicker from "react-date-picker";
 import qricon from "../assets/qricon.png";
 
+import domtoimage from "dom-to-image";
+import * as htmlToImage from "html-to-image";
+import { toPng, toJpeg, toBlob, toPixelData, toSvg } from "html-to-image";
+import download from "downloadjs";
+import { saveAs } from "file-saver";
+
 import {
   CloseIcon,
   AddIcon,
@@ -70,6 +76,7 @@ const OrderEdit = (props) => {
   const [isBarcodeOpen, setIsBarcodeOpen] = useState(false);
   const [popupImage, setPopupImage] = useState("");
   const [qrResult, setQrResult] = useState("");
+  const [recieptOpen, setRecieptOpen] = useState(false);
   const cancelRef = useRef();
   const { isOpen, onOpen, onClose } = useDisclosure();
   const {
@@ -184,12 +191,146 @@ const OrderEdit = (props) => {
     );
   };
 
+  const OrderReciept = () => {
+    return (
+      <Box
+        borderRadius="10px"
+        backgroundColor="white"
+        p="15px"
+        margin="5px"
+        mt="15px"
+        width="350px"
+        id="order_reciept"
+      >
+        <Heading color="#29283C" fontSize="18px" fontWeight="600" mt="10px">
+          Order Reciept
+        </Heading>
+        <Text color="gray.500">Your order is confirmed</Text>
+
+        <Text mt="6px" color="gray.400" textAlign="center">
+          ______________________________________________
+        </Text>
+
+        <Text mt="10px">
+          date : <b>{orderDetails.order_date}</b>
+        </Text>
+        <Text mt="10px">
+          Order Id : <b>{orderDetails.id}</b>
+        </Text>
+
+        <Text>
+          Customer Name : <b>{orderDetails.customer_name}</b>
+        </Text>
+        <Stack direction="row">
+          <Text>Address : {orderDetails.customer_address}</Text>
+        </Stack>
+
+        {orderDetails.order_products &&
+          orderDetails.order_products.map((product) => (
+            <Box
+              mt="20px"
+              borderRadius="10px"
+              borderWidth="1px"
+              p="10px"
+              mb="8px"
+              key={product.id}
+            >
+              <Stack direction="row">
+                <Img
+                  className={styles.product_image_reciept}
+                  src={`https://nitinr-cors.herokuapp.com/https://firebasestorage.googleapis.com/v0/b/abony-cd5c4.appspot.com/o/${product.product_image}?alt=media`}
+                  fallbackSrc="https://via.placeholder.com/150"
+                  borderRadius="10px"
+                />
+                <Stack direction="column" spacing="0px">
+                  <Stack spacing="5" direction="row" mt="2">
+                    <Text color="#757575" fontWeight="500">
+                      Barcode :
+                    </Text>
+                    <Text colorScheme="black">{product.product_barcode}</Text>
+                  </Stack>
+                  <Stack spacing="5" direction="row" mt="2">
+                    <Text color="#757575" fontWeight="500">
+                      Price :
+                    </Text>
+                    <Text colorScheme="black">₹{product.product_price}</Text>
+                  </Stack>
+                  <Stack spacing="5" direction="row" mt="2">
+                    <Text color="#757575" fontWeight="500">
+                      Size :
+                    </Text>
+                    <Text colorScheme="black">{product.product_size}</Text>
+                  </Stack>
+                </Stack>
+              </Stack>
+            </Box>
+          ))}
+        <Text mt="6px" color="gray.400" textAlign="center">
+          ______________________________________________
+        </Text>
+        <Text textAlign="right" mr="15px" mt="10px">
+          Courier Charge :{" "}
+          <b>{orderDetails.payment_mode == "BANK" ? "FREE SHIPPING" : 100}</b>
+        </Text>
+        <Text textAlign="right" mr="15px">
+          Cart Value :{" "}
+          <b>
+            ₹
+            {orderDetails.order_products &&
+              orderDetails.order_products.reduce(
+                (acc, curr) => acc + curr.product_price,
+                0
+              )}
+          </b>
+        </Text>
+
+        <Text textAlign="right" mr="15px" mt="20px" mb="10px">
+          Total :{" "}
+          <b>
+            ₹
+            {orderDetails.order_products &&
+              orderDetails.order_products.reduce(
+                (acc, curr) => acc + curr.product_price,
+                orderDetails.payment_mode === "COD" ? 100 : 0
+              )}
+          </b>
+        </Text>
+      </Box>
+    );
+  };
+
+  const downloadReciept = () => {
+    setRecieptOpen(true);
+    setTimeout(() => {
+      const node = document.getElementById("order_reciept");
+
+      domtoimage
+        .toBlob(node)
+        .then(function (dataUrl) {
+          saveAs(dataUrl);
+        })
+        .then(() => setRecieptOpen(false))
+        .catch(function (error) {
+          console.error("oops, something went wrong!", error);
+        });
+    }, 100);
+  };
+
   return (
     <>
       <Header title="Order Edit" />
       <div className={styles.container_orderedit}>
         <LoadingCard />
         <ImageModal />
+        {recieptOpen && <OrderReciept />}
+        <Button
+          onClick={downloadReciept}
+          variant="outline"
+          colorScheme="teal"
+          mb="10px"
+        >
+          Download Reciept
+        </Button>
         <Box borderRadius="10px" backgroundColor="white" p="10px" margin="5px">
           <Stack direction="row" justifyContent="space-between">
             <Heading color="#29283C" fontSize="18px" fontWeight="600">
@@ -377,6 +518,7 @@ const OrderEdit = (props) => {
             <Text colorScheme="black">{orderDetails.order_remark}</Text>
           </Stack>
         </Box>
+
         <Box
           borderRadius="10px"
           backgroundColor="white"

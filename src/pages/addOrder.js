@@ -48,6 +48,7 @@ import {
   Switch,
   FormErrorMessage,
 } from "@chakra-ui/react";
+import Header from "../components/Header";
 
 //product.product_image is treated as id for product
 const AddOrder = () => {
@@ -217,10 +218,10 @@ const AddOrder = () => {
   const valdateFields = async () => {
     //validate order details
     if (
-      order.customer_name ||
-      order.customer_instagram ||
-      order.customer_phone ||
-      order.customer_address ||
+      order.customer_name &&
+      order.customer_instagram &&
+      order.customer_phone &&
+      order.customer_address &&
       order.customer_pincode
     ) {
       //validate order products
@@ -270,12 +271,7 @@ const AddOrder = () => {
 
   return (
     <>
-      <div className={styles.header}>
-        <button className={styles.backButton} onClick={() => history.goBack()}>
-          <img src={backIcon} className={styles.backIcon} alt="back_icon" />
-        </button>
-        <h1 className={styles.label}>Add Order</h1>
-      </div>
+      <Header title="Order Add" />
       <div className={styles.container}>
         <LoadingCard />
         <FormControl w="90%" mt="2" isRequired>
