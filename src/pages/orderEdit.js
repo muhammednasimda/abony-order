@@ -22,6 +22,7 @@ import {
 
 import {
   Badge,
+  Divider,
   Flex,
   Img,
   InputRightElement,
@@ -74,6 +75,7 @@ const OrderEdit = (props) => {
   const [isOpenAlert, setIsOpenAlert] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isBarcodeOpen, setIsBarcodeOpen] = useState(false);
+  const [imageReciept, setImageReciept] = useState("");
   const [popupImage, setPopupImage] = useState("");
   const [qrResult, setQrResult] = useState("");
   const [recieptOpen, setRecieptOpen] = useState(false);
@@ -197,8 +199,6 @@ const OrderEdit = (props) => {
         borderRadius="10px"
         backgroundColor="white"
         p="15px"
-        margin="5px"
-        mt="15px"
         width="350px"
         id="order_reciept"
       >
@@ -207,9 +207,15 @@ const OrderEdit = (props) => {
         </Heading>
         <Text color="gray.500">Your order is confirmed</Text>
 
-        <Text mt="6px" color="gray.400" textAlign="center">
-          ______________________________________________
-        </Text>
+        <hr
+          style={{
+            marginTop: "10px",
+            height: "1.5px",
+            borderWidth: 0,
+            color: "#d9d9d9",
+            backgroundColor: "#d9d9d9",
+          }}
+        />
 
         <Text mt="10px">
           date : <b>{orderDetails.order_date}</b>
@@ -265,9 +271,15 @@ const OrderEdit = (props) => {
               </Stack>
             </Box>
           ))}
-        <Text mt="6px" color="gray.400" textAlign="center">
-          ______________________________________________
-        </Text>
+        <hr
+          style={{
+            height: "1.5px",
+            marginTop: "10px",
+            borderWidth: 0,
+            color: "#d9d9d9",
+            backgroundColor: "#d9d9d9",
+          }}
+        />
         <Text textAlign="right" mr="15px" mt="10px">
           Courier Charge :{" "}
           <b>{orderDetails.payment_mode == "BANK" ? "FREE SHIPPING" : 100}</b>
@@ -295,6 +307,9 @@ const OrderEdit = (props) => {
               )}
           </b>
         </Text>
+        <Text textAlign="center" mt="40px" mb="20px" fontWeight="400">
+          🎉 Thanks for shopping with abony
+        </Text>
       </Box>
     );
   };
@@ -305,9 +320,9 @@ const OrderEdit = (props) => {
       const node = document.getElementById("order_reciept");
 
       domtoimage
-        .toBlob(node)
+        .toJpeg(node)
         .then(function (dataUrl) {
-          saveAs(dataUrl);
+          setImageReciept(dataUrl);
         })
         .then(() => setRecieptOpen(false))
         .catch(function (error) {
@@ -322,6 +337,12 @@ const OrderEdit = (props) => {
       <div className={styles.container_orderedit}>
         <LoadingCard />
         <ImageModal />
+        {imageReciept && (
+          <img
+            src={imageReciept}
+            onDoubleClick={() => setImageReciept(false)}
+          />
+        )}
         {recieptOpen && <OrderReciept />}
         <Button
           onClick={downloadReciept}
