@@ -3,7 +3,7 @@ import styles from "./css/addOrder.module.scss";
 import imageCompression from "browser-image-compression";
 import { v4 as uuidv4 } from "uuid";
 import { useHistory } from "react-router-dom";
-import backIcon from "../assets/backIcon.png";
+
 import { useFormLocal } from "../components/useFormLocal";
 import DatePicker from "react-date-picker";
 import supabase from "../supabase";
@@ -52,11 +52,13 @@ import {
 import Header from "../components/Header";
 import Popup from "reactjs-popup";
 import RoboIcon from "../assets/robo.png";
+import LoadingCard from "../components/LoadingCard";
 
 //product.product_image is treated as id for product
 const AddOrder = () => {
   const [paymentMode, setPaymentMethod] = useState("BANK");
   const [isAlertOpen, setIsAlertOpen] = useState(false);
+  const [croppedImage, setCroppedImage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [order, setOrder, updateOrder] = useFormLocal([]);
   const [roboText, setRoboText] = useState("");
@@ -74,6 +76,7 @@ const AddOrder = () => {
     },
   ]);
   const [isValidationError, setIsValidationError] = useState(false);
+  const [crop, setCrop] = useState({ aspect: 9 / 9 });
   const cancelRef = useRef();
   const history = useHistory();
   const storageRef = firebase.storage().ref();
@@ -87,50 +90,6 @@ const AddOrder = () => {
       payment_status: true,
     });
   }, []);
-
-  const LoadingCard = () => {
-    return (
-      <Modal
-        isOpen={isOpen}
-        onClose={onClose}
-        closeOnOverlayClick={false}
-        width="10"
-        size="xs"
-        isCentered
-      >
-        <ModalOverlay />
-
-        <ModalContent w="130px" height="130px" borderRadius="20px">
-          <ModalBody>
-            <Flex w="100%" h="100%" justifyContent="center" alignItems="center">
-              {isLoading ? (
-                <Spinner size="lg" />
-              ) : (
-                <svg
-                  class={styles.checkmark}
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 52 52"
-                >
-                  <circle
-                    class={styles.checkmark__circle}
-                    cx="26"
-                    cy="26"
-                    r="25"
-                    fill="none"
-                  />
-                  <path
-                    class={styles.checkmark__check}
-                    fill="none"
-                    d="M14.1 27.2l7.1 7.2 16.7-16.8"
-                  />
-                </svg>
-              )}
-            </Flex>
-          </ModalBody>
-        </ModalContent>
-      </Modal>
-    );
-  };
 
   //change or edit products array in state
   const handleOrderProduct = (name, value, id) => {
@@ -277,7 +236,7 @@ const AddOrder = () => {
     <>
       <Header title="Order Add" />
       <div className={styles.container}>
-        <LoadingCard />
+        <LoadingCard onClose={onclose} isLoading={isLoading} isOpen={isOpen} />
         <Popup
           lockScroll={true}
           closeOnDocumentClick={false}

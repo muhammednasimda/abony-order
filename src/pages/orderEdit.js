@@ -69,6 +69,9 @@ import Header from "../components/Header";
 
 import BarcodeScannerComponent from "react-webcam-barcode-scanner";
 import html2canvas from "html2canvas";
+import LoadingCard from "../components/LoadingCard";
+import OrderReciept from "../components/OrderReciept";
+import ImageModal from "../components/ImageModal";
 
 //product.product_image is treated as id for product
 const OrderEdit = (props) => {
@@ -77,7 +80,6 @@ const OrderEdit = (props) => {
   const [isLoading, setIsLoading] = useState(false);
   const [isBarcodeOpen, setIsBarcodeOpen] = useState(false);
 
-  const [imageReciept, setImageReciept] = useState("");
   const [popupImage, setPopupImage] = useState("");
   const [qrResult, setQrResult] = useState("");
   const [recieptOpen, setRecieptOpen] = useState(false);
@@ -121,7 +123,6 @@ const OrderEdit = (props) => {
       setIsLoading(false);
       setTimeout(() => {
         onClose();
-        history.push("/");
       }, 2000);
     }
 
@@ -131,186 +132,6 @@ const OrderEdit = (props) => {
   const handleImageClick = (imageUrl) => {
     setPopupImage(imageUrl);
     onImageOpen();
-  };
-
-  const ImageModal = () => {
-    return (
-      <Modal isOpen={isImageOpen} onClose={onImageClose} size="lg" isCentered>
-        <ModalOverlay />
-
-        <ModalContent w="90%" borderRadius="20px">
-          <ModalBody>
-            <Flex w="100%" h="100%" justifyContent="center" alignItems="center">
-              <Img src={popupImage} />
-            </Flex>
-          </ModalBody>
-        </ModalContent>
-      </Modal>
-    );
-  };
-
-  const LoadingCard = () => {
-    return (
-      <Modal
-        isOpen={isOpen}
-        onClose={onClose}
-        closeOnOverlayClick={false}
-        width="10"
-        size="xs"
-        isCentered
-      >
-        <ModalOverlay />
-
-        <ModalContent w="130px" height="130px" borderRadius="20px">
-          <ModalBody>
-            <Flex w="100%" h="100%" justifyContent="center" alignItems="center">
-              {isLoading ? (
-                <Spinner size="lg" />
-              ) : (
-                <svg
-                  class={styles.checkmark}
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 52 52"
-                >
-                  <circle
-                    class={styles.checkmark__circle}
-                    cx="26"
-                    cy="26"
-                    r="25"
-                    fill="none"
-                  />
-                  <path
-                    class={styles.checkmark__check}
-                    fill="none"
-                    d="M14.1 27.2l7.1 7.2 16.7-16.8"
-                  />
-                </svg>
-              )}
-            </Flex>
-          </ModalBody>
-        </ModalContent>
-      </Modal>
-    );
-  };
-
-  const OrderReciept = () => {
-    return (
-      <Box
-        borderRadius="10px"
-        backgroundColor="white"
-        p="15px"
-        width="350px"
-        id="order_reciept"
-      >
-        <Heading color="#29283C" fontSize="18px" fontWeight="600" mt="10px">
-          Order Reciept
-        </Heading>
-        <Text color="gray.500">Your order is confirmed</Text>
-
-        <hr
-          style={{
-            marginTop: "10px",
-            height: "1.5px",
-            borderWidth: 0,
-            color: "#d9d9d9",
-            backgroundColor: "#d9d9d9",
-          }}
-        />
-
-        <Text mt="10px">
-          date : <b>{orderDetails.order_date}</b>
-        </Text>
-        <Text mt="10px">
-          Order Id : <b>{orderDetails.id}</b>
-        </Text>
-
-        <Text>
-          Customer Name : <b>{orderDetails.customer_name}</b>
-        </Text>
-        <Stack direction="row">
-          <Text>Address : {orderDetails.customer_address}</Text>
-        </Stack>
-
-        {orderDetails.order_products &&
-          orderDetails.order_products.map((product) => (
-            <Box
-              mt="20px"
-              borderRadius="10px"
-              borderWidth="1px"
-              p="10px"
-              mb="8px"
-              key={product.id}
-            >
-              <Stack direction="row">
-                <img
-                  className={styles.product_image}
-                  src={`https://firebasestorage.googleapis.com/v0/b/abony-cd5c4.appspot.com/o/${product.product_image}?alt=media`}
-                  borderRadius="10px"
-                />
-                <Stack direction="column" spacing="0px">
-                  <Stack spacing="5" direction="row" mt="2">
-                    <Text color="#757575" fontWeight="500">
-                      Barcode :
-                    </Text>
-                    <Text colorScheme="black">{product.product_barcode}</Text>
-                  </Stack>
-                  <Stack spacing="5" direction="row" mt="2">
-                    <Text color="#757575" fontWeight="500">
-                      Price :
-                    </Text>
-                    <Text colorScheme="black">₹{product.product_price}</Text>
-                  </Stack>
-                  <Stack spacing="5" direction="row" mt="2">
-                    <Text color="#757575" fontWeight="500">
-                      Size :
-                    </Text>
-                    <Text colorScheme="black">{product.product_size}</Text>
-                  </Stack>
-                </Stack>
-              </Stack>
-            </Box>
-          ))}
-        <hr
-          style={{
-            height: "1.5px",
-            marginTop: "10px",
-            borderWidth: 0,
-            color: "#d9d9d9",
-            backgroundColor: "#d9d9d9",
-          }}
-        />
-        <Text textAlign="right" mr="15px" mt="10px">
-          Courier Charge :{" "}
-          <b>{orderDetails.payment_mode == "BANK" ? "FREE SHIPPING" : 100}</b>
-        </Text>
-        <Text textAlign="right" mr="15px">
-          Cart Value :{" "}
-          <b>
-            ₹
-            {orderDetails.order_products &&
-              orderDetails.order_products.reduce(
-                (acc, curr) => acc + curr.product_price,
-                0
-              )}
-          </b>
-        </Text>
-
-        <Text textAlign="right" mr="15px" mt="20px" mb="10px">
-          Total :{" "}
-          <b>
-            ₹
-            {orderDetails.order_products &&
-              orderDetails.order_products.reduce(
-                (acc, curr) => acc + curr.product_price,
-                orderDetails.payment_mode === "COD" ? 100 : 0
-              )}
-          </b>
-        </Text>
-        <Text textAlign="center" mt="40px" mb="20px" fontWeight="400">
-          🎉 Thanks for shopping with abony
-        </Text>
-      </Box>
-    );
   };
 
   const downloadReciept = () => {
@@ -332,15 +153,14 @@ const OrderEdit = (props) => {
     <>
       <Header title="Order Edit" />
       <div className={styles.container_orderedit}>
-        <LoadingCard />
-        <ImageModal />
-        {imageReciept && (
-          <img
-            src={imageReciept}
-            onDoubleClick={() => setImageReciept(false)}
-          />
-        )}
-        {recieptOpen && <OrderReciept />}
+        <LoadingCard onClose={onclose} isLoading={isLoading} isOpen={isOpen} />
+        <ImageModal
+          isImageOpen={isImageOpen}
+          onImageClose={onImageClose}
+          image={popupImage}
+        />
+
+        {recieptOpen && <OrderReciept orderDetails={orderDetails} />}
         <Stack direction="row" justifyContent="space-between">
           <Button
             variant="outline"
