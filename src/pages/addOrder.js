@@ -20,6 +20,7 @@ import {
   ModalContent,
   ModalOverlay,
   Spinner,
+  Text,
   useDisclosure,
 } from "@chakra-ui/react";
 import {
@@ -49,6 +50,8 @@ import {
   FormErrorMessage,
 } from "@chakra-ui/react";
 import Header from "../components/Header";
+import Popup from "reactjs-popup";
+import RoboIcon from "../assets/robo.png";
 
 //product.product_image is treated as id for product
 const AddOrder = () => {
@@ -56,6 +59,7 @@ const AddOrder = () => {
   const [isAlertOpen, setIsAlertOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [order, setOrder, updateOrder] = useFormLocal([]);
+  const [roboText, setRoboText] = useState("");
 
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [orderProducts, setOrderProducts] = useState([
@@ -274,6 +278,66 @@ const AddOrder = () => {
       <Header title="Order Add" />
       <div className={styles.container}>
         <LoadingCard />
+        <Popup
+          lockScroll={true}
+          closeOnDocumentClick={false}
+          trigger={
+            <IconButton
+              icon={<img src={RoboIcon} width="40px" />}
+              alignSelf="flex-end"
+              mr="20px"
+              mt="10px"
+            />
+          }
+          modal
+          contentStyle={{ width: "80vw", borderRadius: "10px" }}
+          nested
+        >
+          {(close) => (
+            <Box p="10px">
+              <Textarea
+                size="lg"
+                rows="7"
+                value={roboText}
+                onChange={(e) => setRoboText(e.target.value)}
+              />
+              {roboText && (
+                <>
+                  <Text mt="5px">
+                    Pincode :{" "}
+                    <Badge size="lg" fontSize="16px" colorScheme="red">
+                      {roboText.match(/\b\d{6}\b/g)}
+                    </Badge>
+                  </Text>
+                  <Text mt="10px">
+                    Phone :{" "}
+                    <Badge size="lg" fontSize="16px" colorScheme="green">
+                      {roboText.match(/\d{10,}\b/g)}
+                    </Badge>
+                  </Text>
+                </>
+              )}
+              <Stack direction="row" mt="15px">
+                <Button onClick={close} color="gray.500">
+                  Cancel
+                </Button>
+                <Button
+                  onClick={() => {
+                    setOrder({
+                      ...order,
+                      customer_pincode: roboText.match(/\b\d{6}\b/g)[0],
+                      customer_phone: roboText.match(/\d{10,}\b/g)[0],
+                    });
+                    close();
+                  }}
+                  colorScheme="green"
+                >
+                  Save This
+                </Button>
+              </Stack>
+            </Box>
+          )}
+        </Popup>
         <FormControl w="90%" mt="2" isRequired>
           <FormLabel>Order Date :</FormLabel>
           <DatePicker

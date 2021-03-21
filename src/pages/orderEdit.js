@@ -68,6 +68,7 @@ import {
 import Header from "../components/Header";
 
 import BarcodeScannerComponent from "react-webcam-barcode-scanner";
+import html2canvas from "html2canvas";
 
 //product.product_image is treated as id for product
 const OrderEdit = (props) => {
@@ -75,6 +76,7 @@ const OrderEdit = (props) => {
   const [isOpenAlert, setIsOpenAlert] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isBarcodeOpen, setIsBarcodeOpen] = useState(false);
+
   const [imageReciept, setImageReciept] = useState("");
   const [popupImage, setPopupImage] = useState("");
   const [qrResult, setQrResult] = useState("");
@@ -89,8 +91,6 @@ const OrderEdit = (props) => {
   const history = useHistory();
 
   const productId = props.match.params.id;
-
-  const btnRef = useRef();
 
   //get details of order
   useEffect(() => {
@@ -242,10 +242,9 @@ const OrderEdit = (props) => {
               key={product.id}
             >
               <Stack direction="row">
-                <Img
-                  className={styles.product_image_reciept}
-                  src={`https://nitinr-cors.herokuapp.com/https://firebasestorage.googleapis.com/v0/b/abony-cd5c4.appspot.com/o/${product.product_image}?alt=media`}
-                  fallbackSrc="https://via.placeholder.com/150"
+                <img
+                  className={styles.product_image}
+                  src={`https://firebasestorage.googleapis.com/v0/b/abony-cd5c4.appspot.com/o/${product.product_image}?alt=media`}
                   borderRadius="10px"
                 />
                 <Stack direction="column" spacing="0px">
@@ -316,18 +315,16 @@ const OrderEdit = (props) => {
 
   const downloadReciept = () => {
     setRecieptOpen(true);
-    setTimeout(() => {
+    setTimeout(async () => {
       const node = document.getElementById("order_reciept");
-
-      domtoimage
-        .toJpeg(node)
-        .then(function (dataUrl) {
-          setImageReciept(dataUrl);
-        })
-        .then(() => setRecieptOpen(false))
-        .catch(function (error) {
-          console.error("oops, something went wrong!", error);
-        });
+      html2canvas(node, {
+        allowTaint: true,
+        useCORS: true,
+        logging: true,
+      }).then((img) =>
+        saveAs(img.toDataURL(), `Order Reciept - ${orderDetails.customer_name}`)
+      );
+      setRecieptOpen(false);
     }, 100);
   };
 
@@ -344,14 +341,16 @@ const OrderEdit = (props) => {
           />
         )}
         {recieptOpen && <OrderReciept />}
-        <Button
-          onClick={downloadReciept}
-          variant="outline"
-          colorScheme="teal"
-          mb="10px"
-        >
-          Download Reciept
-        </Button>
+        <Stack direction="row" justifyContent="space-between">
+          <Button
+            variant="outline"
+            colorScheme="teal"
+            mb="10px"
+            onClick={downloadReciept}
+          >
+            Download Reciept
+          </Button>
+        </Stack>
         <Box borderRadius="10px" backgroundColor="white" p="10px" margin="5px">
           <Stack direction="row" justifyContent="space-between">
             <Heading color="#29283C" fontSize="18px" fontWeight="600">
@@ -643,7 +642,6 @@ const OrderEdit = (props) => {
                     }
                     className={styles.product_image}
                     src={`https://firebasestorage.googleapis.com/v0/b/abony-cd5c4.appspot.com/o/${product.product_image}?alt=media`}
-                    fallbackSrc="https://via.placeholder.com/150"
                     borderRadius="10px"
                   />
                   <Stack direction="column" spacing="0px">
