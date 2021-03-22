@@ -370,15 +370,17 @@ const OrderEdit = (props) => {
             <Heading color="#29283C" fontSize="18px" fontWeight="600">
               Customer Details
             </Heading>
-            <Badge
-              justifyContent="center"
-              variant="solid"
-              colorScheme="purple"
-              alignSelf="center"
-              fontSize="15px"
-            >
-              Reseller
-            </Badge>
+            {orderDetails.is_reseller && (
+              <Badge
+                justifyContent="center"
+                variant="solid"
+                colorScheme="purple"
+                alignSelf="center"
+                fontSize="15px"
+              >
+                Reseller
+              </Badge>
+            )}
           </Stack>
           <Stack direction="row" mt="2">
             <Text color="#757575" fontWeight="500">
