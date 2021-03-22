@@ -415,7 +415,7 @@ const OrderEdit = (props) => {
               size="sm"
               onClick={() =>
                 window.open(
-                  `https://instagram.com/${orderDetails.customer_instagram}`
+                  `instagram://user?username=${orderDetails.customer_instagram}`
                 )
               }
             />
