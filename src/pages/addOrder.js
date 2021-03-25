@@ -570,7 +570,7 @@ const AddOrder = () => {
             type="number"
             size="lg"
             name="shipping_charge"
-            value={order.shipping_charge || ""}
+            value={order.shipping_charge}
             onChange={updateOrder}
           />
         </FormControl>
