@@ -236,7 +236,7 @@ const AddOrder = () => {
     <>
       <Header title="Order Add" />
       <div className={styles.container}>
-        <LoadingCard onClose={onclose} isLoading={isLoading} isOpen={isOpen} />
+        <LoadingCard onClose={onClose} isLoading={isLoading} isOpen={isOpen} />
         <Popup
           lockScroll={true}
           closeOnDocumentClick={false}

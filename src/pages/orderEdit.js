@@ -153,7 +153,7 @@ const OrderEdit = (props) => {
     <>
       <Header title="Order Edit" />
       <div className={styles.container_orderedit}>
-        <LoadingCard onClose={onclose} isLoading={isLoading} isOpen={isOpen} />
+        <LoadingCard onClose={onClose} isLoading={isLoading} isOpen={isOpen} />
         <ImageModal
           isImageOpen={isImageOpen}
           onImageClose={onImageClose}
