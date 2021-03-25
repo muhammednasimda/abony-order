@@ -72,6 +72,7 @@ import html2canvas from "html2canvas";
 import LoadingCard from "../components/LoadingCard";
 import OrderReciept from "../components/OrderReciept";
 import ImageModal from "../components/ImageModal";
+import FocusLock from "@chakra-ui/focus-lock";
 
 //product.product_image is treated as id for product
 const OrderEdit = (props) => {
@@ -205,7 +206,23 @@ const OrderEdit = (props) => {
                     <option value="RETURNED">RETURNED</option>
                     <option value="REFUNDED">REFUNDED</option>
                   </Select>
-
+                  <FormLabel>Payment Mode :</FormLabel>
+                  <Select
+                    name="payment_mode"
+                    size="lg"
+                    mb="5"
+                    value={orderDetails.payment_mode || ""}
+                    onChange={(e) => {
+                      setOrderDetails((old) => ({
+                        ...old,
+                        payment_mode: e.target.value,
+                      }));
+                    }}
+                  >
+                    <option value="BANK">BANK</option>
+                    <option value="COD">COD</option>
+                    <option value="CASH">CASH</option>
+                  </Select>
                   {orderDetails.payment_mode !== "COD" && (
                     <>
                       <FormLabel mt="10px"> Payment Status</FormLabel>
@@ -311,22 +328,16 @@ const OrderEdit = (props) => {
           </Stack>
           <Stack direction="row" mt="2">
             <Text color="#757575" fontWeight="500">
-              Total Amount :
-            </Text>
-            <Text colorScheme="black">
-              ₹
-              {orderDetails.order_products &&
-                orderDetails.order_products.reduce(
-                  (acc, curr) => acc + curr.product_price,
-                  0
-                )}
-            </Text>
-          </Stack>
-          <Stack direction="row" mt="2">
-            <Text color="#757575" fontWeight="500">
               Payment Mode :
             </Text>
-            <Text colorScheme="black">{orderDetails.payment_mode}</Text>
+            <Badge
+              alignSelf="center"
+              colorScheme="purple"
+              p="3px"
+              variant="solid"
+            >
+              {orderDetails.payment_mode}
+            </Badge>
           </Stack>
           {orderDetails.payment_mode !== "COD" && (
             <>
@@ -353,6 +364,20 @@ const OrderEdit = (props) => {
           )}
           <Stack direction="row" mt="2">
             <Text color="#757575" fontWeight="500">
+              Total Amount :
+            </Text>
+            <Text colorScheme="black">
+              ₹
+              {orderDetails.order_products &&
+                orderDetails.order_products.reduce(
+                  (acc, curr) => acc + curr.product_price,
+                  +orderDetails.shipping_charge
+                )}
+            </Text>
+          </Stack>
+
+          <Stack direction="row" mt="2">
+            <Text color="#757575" fontWeight="500">
               Remarks :
             </Text>
             <Text colorScheme="black">{orderDetails.order_remark}</Text>
@@ -370,6 +395,7 @@ const OrderEdit = (props) => {
             <Heading color="#29283C" fontSize="18px" fontWeight="600">
               Customer Details
             </Heading>
+
             {orderDetails.is_reseller && (
               <Badge
                 justifyContent="center"
@@ -381,6 +407,88 @@ const OrderEdit = (props) => {
                 Reseller
               </Badge>
             )}
+            <Popup
+              lockScroll={true}
+              closeOnDocumentClick={false}
+              trigger={<IconButton icon={<EditIcon />} size="sm" />}
+              modal
+              contentStyle={{ width: "80vw", borderRadius: "10px" }}
+              nested
+            >
+              {(close) => (
+                <Box borderRadius="10px" p="15px">
+                  <FormLabel mt="10px">Customer Name</FormLabel>
+                  <FocusLock />
+                  <Input
+                    type="text"
+                    name="customer_name"
+                    value={orderDetails.customer_name || ""}
+                    onChange={(e) =>
+                      setOrderDetails({
+                        ...orderDetails,
+                        [e.target.name]: e.target.value,
+                      })
+                    }
+                  />
+                  <FormLabel mt="10px">Mobile</FormLabel>
+                  <Input
+                    type="number"
+                    name="customer_phone"
+                    value={orderDetails.customer_phone || ""}
+                    onChange={(e) =>
+                      setOrderDetails({
+                        ...orderDetails,
+                        [e.target.name]: e.target.value,
+                      })
+                    }
+                  />
+                  <FormLabel mt="10px">Pincode</FormLabel>
+                  <Input
+                    type="number"
+                    name="customer_pincode"
+                    value={orderDetails.customer_pincode || ""}
+                    onChange={(e) =>
+                      setOrderDetails({
+                        ...orderDetails,
+                        [e.target.name]: e.target.value,
+                      })
+                    }
+                  />
+                  <FormLabel mt="10px">Instagram</FormLabel>
+                  <Input
+                    type="text"
+                    name="customer_instagram"
+                    value={orderDetails.customer_instagram || ""}
+                    onChange={(e) =>
+                      setOrderDetails({
+                        ...orderDetails,
+                        [e.target.name]: e.target.value,
+                      })
+                    }
+                  />
+                  <FormLabel mt="10px">Adress</FormLabel>
+                  <Textarea
+                    name="customer_address"
+                    value={orderDetails.customer_address || ""}
+                    onChange={(e) =>
+                      setOrderDetails({
+                        ...orderDetails,
+                        [e.target.name]: e.target.value,
+                      })
+                    }
+                  />
+                  <Button
+                    onClick={close}
+                    ml="65%"
+                    colorScheme="teal"
+                    mt="10px"
+                    w="100px"
+                  >
+                    Ok
+                  </Button>
+                </Box>
+              )}
+            </Popup>
           </Stack>
           <Stack direction="row" mt="2">
             <Text color="#757575" fontWeight="500">
@@ -472,6 +580,12 @@ const OrderEdit = (props) => {
                         Barcode :
                       </Text>
                       <Text colorScheme="black">{product.product_barcode}</Text>
+                    </Stack>
+                    <Stack spacing="5" direction="row" mt="2">
+                      <Text color="#757575" fontWeight="500">
+                        Type :
+                      </Text>
+                      <Text colorScheme="black">{product.product_type}</Text>
                     </Stack>
                     <Stack spacing="5" direction="row" mt="2">
                       <Text color="#757575" fontWeight="500">

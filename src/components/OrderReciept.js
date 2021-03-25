@@ -93,7 +93,11 @@ const OrderReciept = ({ orderDetails }) => {
       />
       <Text textAlign="right" mr="15px" mt="10px">
         Courier Charge :{" "}
-        <b>{orderDetails.payment_mode == "BANK" ? "FREE SHIPPING" : 100}</b>
+        <b>
+          {orderDetails.shipping_charge == 0
+            ? "FREE SHIPPING"
+            : orderDetails.shipping_charge}
+        </b>
       </Text>
       <Text textAlign="right" mr="15px">
         Cart Value :{" "}
@@ -114,7 +118,7 @@ const OrderReciept = ({ orderDetails }) => {
           {orderDetails.order_products &&
             orderDetails.order_products.reduce(
               (acc, curr) => acc + curr.product_price,
-              orderDetails.payment_mode === "COD" ? 100 : 0
+              +orderDetails.shipping_charge
             )}
         </b>
       </Text>
