@@ -88,6 +88,7 @@ const AddOrder = () => {
       is_reseller: false,
       payment_to: "nasim",
       payment_status: true,
+      shipping_charge: 0,
     });
   }, []);
 
