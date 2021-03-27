@@ -685,7 +685,7 @@ const OrderEdit = (props) => {
                       }}
                     />
                   )}
-                  <FormLabel mt="5"> Shipping charge</FormLabel>
+                  <FormLabel mt="5"> Shipping charge (For customer)</FormLabel>
                   <Input
                     type="number"
                     value={orderDetails.shipping_charge || ""}
@@ -696,6 +696,21 @@ const OrderEdit = (props) => {
                       })
                     }
                   />
+
+                  <FormLabel>Shipping Charge (for company):</FormLabel>
+                  <Input
+                    type="number"
+                    size="lg"
+                    name="shipping_charge_company"
+                    value={orderDetails.shipping_charge_company}
+                    onChange={(e) =>
+                      setOrderDetails({
+                        ...orderDetails,
+                        shipping_charge_company: e.target.value,
+                      })
+                    }
+                  />
+
                   <FormLabel mt="10px">Shipping Date :</FormLabel>
                   <DatePicker
                     format="dd/MM/yyyy"
@@ -742,9 +757,17 @@ const OrderEdit = (props) => {
           </Stack>
           <Stack direction="row" mt="2">
             <Text color="#757575" fontWeight="500">
-              Charge :
+              Charge (for customer) :
             </Text>
             <Text colorScheme="black">{orderDetails.shipping_charge}</Text>
+          </Stack>
+          <Stack direction="row" mt="2">
+            <Text color="#757575" fontWeight="500">
+              Charge (for company) :
+            </Text>
+            <Text colorScheme="black">
+              {orderDetails.shipping_charge_company}
+            </Text>
           </Stack>
           <Stack direction="row" mt="2">
             <Text color="#757575" fontWeight="500">

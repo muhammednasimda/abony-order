@@ -186,8 +186,7 @@ const AddOrder = () => {
       order.customer_instagram &&
       order.customer_phone &&
       order.customer_address &&
-      order.customer_pincode &&
-      order.shipping_charge
+      order.customer_pincode
     ) {
       //validate order products
       const isproducts = orderProducts.filter(
@@ -565,7 +564,7 @@ const AddOrder = () => {
           </RadioGroup>
         </FormControl>
         <FormControl id="shipping_charge" w="90%" mt="2" isRequired>
-          <FormLabel>Shipping Charge :</FormLabel>
+          <FormLabel>Shipping Charge (For customer):</FormLabel>
           <Input
             type="number"
             size="lg"
@@ -574,6 +573,7 @@ const AddOrder = () => {
             onChange={updateOrder}
           />
         </FormControl>
+
         {paymentMode === "BANK" && (
           <>
             <FormControl w="90%" mt="5">
