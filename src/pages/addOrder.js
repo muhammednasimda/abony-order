@@ -146,9 +146,10 @@ const AddOrder = () => {
     let imagesArr = [...orderProducts].map((product) => product.convertedimage);
     console.log(imagesArr);
     const imageResponse = await imageToServer(imagesArr);
+    const resp = await JSON.stringify(imageResponse);
     await supabase
       .from("error_logs")
-      .insert([{ name: "imageresponse", log: imageResponse }]);
+      .insert([{ name: "imageresponse", log: resp }]);
     console.log(imageResponse);
 
     //adding foreign key of order to oreder products
