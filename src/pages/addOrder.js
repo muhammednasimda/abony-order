@@ -145,10 +145,13 @@ const AddOrder = () => {
     //upoad images to firebase storage
     let imagesArr = [...orderProducts].map((product) => product.convertedimage);
     console.log(imagesArr);
-    await imageToServer(imagesArr);
+    const imageResponse = await imageToServer(imagesArr);
+    await supabase
+      .from("error_logs")
+      .insert([{ name: "imageresponse", log: imageResponse }]);
+    console.log(imageResponse);
 
     //adding foreign key of order to oreder products
-
     const newOrderProducts = [...orderProducts].map((product) => {
       delete product.convertedimage;
       return {
