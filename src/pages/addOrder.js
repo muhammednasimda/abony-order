@@ -215,8 +215,8 @@ const AddOrder = () => {
   const compressImage = async (event, productId) => {
     //compresses image to below 1MB
     const options = {
-      maxSizeMB: 0.6,
-      maxWidthOrHeight: 1280,
+      maxSizeMB: 0.3,
+      maxWidthOrHeight: 600,
       useWebWorker: true,
     };
     try {

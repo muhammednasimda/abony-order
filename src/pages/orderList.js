@@ -18,6 +18,7 @@ import {
 import { AddIcon, PlusSquareIcon, SearchIcon } from "@chakra-ui/icons";
 import Fonts from "../components/Fonts";
 import Header from "../components/Header";
+import useStore from "../ordersState";
 
 const OrderList = () => {
   const history = useHistory();
@@ -27,6 +28,15 @@ const OrderList = () => {
   const [searchedOrders, setSearchedOrders] = useState([]);
 
   const [searchValue, setSearchValue] = useState("");
+
+  // const searchValue = useStore((state) => state.search_value);
+  // const setSearchValue = useStore((state) => state.setSearchValue);
+
+  // const searchedOrders = useStore((state) => state.orders_searched);
+  // const setSearchedOrders = useStore((state) => state.setSearchedOrders);
+
+  // const ordersFetched = useStore((state) => state.orders);
+  // const setOrdersFetched = useStore((state) => state.setOrders);
 
   useEffect(() => {
     if (searchValue == "") {
@@ -41,6 +51,7 @@ const OrderList = () => {
       .from("orders")
       .select(`*,order_products (*)`)
       .ilike(`customer_name,id`, `%${searchValue}%`)
+
       .order("id", { ascending: false });
     console.log(error);
     console.log(data);
@@ -52,6 +63,7 @@ const OrderList = () => {
       let { data: orders, error } = await supabase
         .from("orders")
         .select(`*,order_products (*)`)
+        .range(0, 12)
         .order("id", { ascending: false });
       console.log(orders[0]);
       setOrdersFetched(orders);
@@ -101,10 +113,21 @@ const OrderList = () => {
             <Text fontSize="lg" fontWeight="medium">
               {order.customer_name}
             </Text>
+            <Badge
+              variant="outline"
+              colorScheme="yellow"
+              alignSelf="left"
+              fontSize="15px"
+              mb="5px"
+              alignSelf="start"
+            >
+              {order.customer_phone}
+            </Badge>
             <Stack direction="row">
-              {order.order_status == "RECIEVED" ? (
+              {order.order_status == "RECIEVED" ||
+              order.order_status == "CANCELLED" ? (
                 <Badge variant="solid" mt=".5" colorScheme="red">
-                  RECIEVED
+                  {order.order_status}
                 </Badge>
               ) : (
                 <Badge variant="solid" mt=".5" colorScheme="green">
