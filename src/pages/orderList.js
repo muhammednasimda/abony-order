@@ -52,7 +52,7 @@ const OrderList = () => {
     const { data, error } = await supabase
       .from("orders")
       .select(`*,order_products (*)`)
-      .or("customer_name", `%${searchValue}%`)
+      .ilike(`customer_name`, `%${searchValue}%`)
       .order("id", { ascending: false });
     console.log(error);
     console.log(data);
