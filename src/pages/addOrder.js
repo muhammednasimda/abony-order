@@ -134,8 +134,12 @@ const AddOrder = () => {
     setIsLoading(true);
     onOpen();
 
-    const orderObject = {
+    const rx = /(?:(?:http|https):\/\/)?(?:www\.)?(?:instagram\.com|instagr\.am)\/([A-Za-z0-9-_\.]+)/im;
+    let match = rx.exec(order.customer_instagram);
+
+    let orderObject = {
       ...order,
+      customer_instagram: match ? match[1] : order.customer_instagram,
       payment_mode: paymentMode,
       order_status: "RECIEVED",
     };
@@ -146,11 +150,6 @@ const AddOrder = () => {
     let imagesArr = [...orderProducts].map((product) => product.convertedimage);
     console.log(imagesArr);
     const imageResponse = await imageToServer(imagesArr);
-    const resp = await JSON.stringify(imageResponse);
-    await supabase
-      .from("error_logs")
-      .insert([{ name: "imageresponse", log: resp }]);
-    console.log(imageResponse);
 
     //adding foreign key of order to oreder products
     const newOrderProducts = [...orderProducts].map((product) => {
@@ -215,7 +214,7 @@ const AddOrder = () => {
   const compressImage = async (event, productId) => {
     //compresses image to below 1MB
     const options = {
-      maxSizeMB: 0.3,
+      maxSizeMB: 0.2,
       maxWidthOrHeight: 600,
       useWebWorker: true,
     };

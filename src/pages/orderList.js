@@ -14,6 +14,7 @@ import {
   InputRightElement,
   Button,
   IconButton,
+  CircularProgress,
 } from "@chakra-ui/react";
 import { AddIcon, PlusSquareIcon, SearchIcon } from "@chakra-ui/icons";
 import Fonts from "../components/Fonts";
@@ -26,6 +27,7 @@ const OrderList = () => {
   const [ordersFetched, setOrdersFetched] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [searchedOrders, setSearchedOrders] = useState([]);
+  const [pageNo, setPageNo] = useState(12);
 
   const [searchValue, setSearchValue] = useState("");
 
@@ -50,26 +52,46 @@ const OrderList = () => {
     const { data, error } = await supabase
       .from("orders")
       .select(`*,order_products (*)`)
-      .ilike(`customer_name,id`, `%${searchValue}%`)
-
+      .or("customer_name", `%${searchValue}%`)
       .order("id", { ascending: false });
     console.log(error);
     console.log(data);
     setSearchedOrders(data);
   };
-
   useEffect(() => {
     const fetchData = async () => {
+      setIsLoading(true);
       let { data: orders, error } = await supabase
         .from("orders")
         .select(`*,order_products (*)`)
-        .range(0, 12)
+        .range(pageNo - 12, pageNo)
         .order("id", { ascending: false });
       console.log(orders[0]);
-      setOrdersFetched(orders);
+      setOrdersFetched((old) => [...old, ...orders]);
+      setIsLoading(false);
+    };
+    fetchData();
+  }, [pageNo]);
+
+  //fetch data on page load
+  useEffect(() => {
+    const fetchData = async () => {
+      setIsLoading(true);
+      let { data: orders, error } = await supabase
+        .from("orders")
+        .select(`*,order_products (*)`)
+        .range(pageNo - 12, pageNo)
+        .order("id", { ascending: false });
+      console.log(orders[0]);
+      setOrdersFetched((old) => [...orders]);
+      setIsLoading(false);
     };
     fetchData();
   }, []);
+
+  const handleLoadMore = () => {
+    setPageNo((old) => old + 12);
+  };
 
   const OrderCard = ({ order }) => {
     return (
@@ -183,6 +205,7 @@ const OrderList = () => {
             <SearchIcon mt="5" />
           </InputRightElement>
         </InputGroup>
+
         {searchValue.length < 1
           ? ordersFetched.map((order) => (
               <OrderCard order={order} key={order.id} />
@@ -190,6 +213,10 @@ const OrderList = () => {
           : searchedOrders.map((order) => (
               <OrderCard order={order} key={order.id} />
             ))}
+        {isLoading && <CircularProgress isIndeterminate p="20px" />}
+        <Button onClick={handleLoadMore} mt="20px" mb="20px">
+          Load More
+        </Button>
         <IconButton
           size="lg"
           p="10px"
