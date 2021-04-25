@@ -1,0 +1,30 @@
+.flex_container {
+  width: 100%;
+  background-color: black;
+  display: flex;
+  flex-direction: column;
+}
+.gradient_green {
+  background: rgb(242, 243, 248);
+  background: linear-gradient(
+    0deg,
+    rgba(242, 243, 248, 1) 57%,
+    rgba(47, 255, 53, 0.6110819327731092) 100%
+  );
+}
+.gradient_red {
+  background: rgb(243, 244, 249);
+  background: linear-gradient(
+    0deg,
+    rgba(243, 244, 249, 1) 57%,
+    rgba(255, 38, 38, 0.6110819327731092) 100%
+  );
+}
+.gradient_yellow {
+  background: rgb(243, 244, 249);
+  background: linear-gradient(
+    0deg,
+    rgba(243, 244, 249, 1) 57%,
+    rgba(246, 255, 38, 0.6110819327731092) 100%
+  );
+}
