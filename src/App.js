@@ -6,6 +6,7 @@ import {
   useLocation,
 } from "react-router-dom";
 import AddOrder from "./pages/addOrder";
+import Dashboard from "./pages/dashboard";
 
 import OrderEdit from "./pages/orderEdit";
 import OrderList from "./pages/orderList";
@@ -31,6 +32,7 @@ function App() {
           <Route exact path="/" component={OrderList} />
           <Route exact path="/orderedit/:id" component={OrderEdit} />
           <Route exact path="/orderring/" component={OrderRing} />
+          <Route exact path="/dashboard/" component={Dashboard} />
         </Switch>
       </Router>
     </>
