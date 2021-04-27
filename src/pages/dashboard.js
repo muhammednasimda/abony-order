@@ -7,13 +7,10 @@ import supabase from "../supabase";
 import date from "date-and-time";
 
 const Dashboard = () => {
-  const [dataMetrics, setDataMetrics] = useState({
-    orderCount: "-",
-    orderCountToday: "-",
-    totalRevenue: "-",
-    todayRevenue: "-",
-  });
-  const [isLoading, setIsLoading] = useState(false);
+  const [orderCount, setOrderCount] = useState();
+  const [orderCountToday, setOrderCountToday] = useState();
+  const [totalReveneu, setTotalReveneu] = useState();
+  const [todayReveneu, setTodayReveneu] = useState();
 
   //functions
   const getAllOrderCount = async () => {
@@ -25,7 +22,7 @@ const Dashboard = () => {
     return allorder;
   };
 
-  const getAllOrderCountToday = async () => {
+  const getOrderCountToday = async () => {
     const today = date.format(new Date(), "YYYY-M-DD");
     const { data, error, count: allordertoday } = await supabase
       .from("orders")
@@ -40,12 +37,19 @@ const Dashboard = () => {
     const { data: amounts, error } = await supabase
       .from("order_products")
       .select("product_price");
-    setDataMetrics({ ...dataMetrics, totalvalues: amounts });
-    const sum = amounts.reduce((acc, obj) => {
+
+    const { data: shippingCharges, error: errorshipping } = await supabase
+      .from("orders")
+      .select("shipping_charge");
+    const sumOfShippingCharge = shippingCharges.reduce(
+      (acc, obj) => acc + obj.shipping_charge,
+      0
+    );
+    const sumOforders = amounts.reduce((acc, obj) => {
       return acc + obj.product_price;
     }, 0);
+    const sum = sumOfShippingCharge + sumOforders;
     console.log(sum);
-
     return sum;
   };
 
@@ -67,25 +71,16 @@ const Dashboard = () => {
   //functions ends here
 
   useEffect(() => {
-    setIsLoading(true);
-
     const getAllData = async () => {
       const orderCount = await getAllOrderCount();
-      const todayOrder = await getAllOrderCountToday();
-      const totalReveneu = await getTotalReveneu();
-      const todayReveneu = await getTodayReveneu();
+      const todayOrder = await getOrderCountToday();
+      const ReveneuTotal = await getTotalReveneu();
+      const ReveneuToday = await getTodayReveneu();
 
-      setDataMetrics({ ...dataMetrics, orderCount: orderCount.toString() });
-      setDataMetrics({
-        ...dataMetrics,
-        orderCountToday: todayOrder.toString(),
-      });
-      setDataMetrics({ ...dataMetrics, totalRevenue: totalReveneu.toString() });
-      setDataMetrics({ ...dataMetrics, todayRevenue: todayReveneu.toString() });
-      console.log({
-        dataMetrics,
-      });
-      setIsLoading(false);
+      setOrderCount(orderCount);
+      setOrderCountToday(todayOrder);
+      setTotalReveneu(ReveneuTotal);
+      setTodayReveneu(ReveneuToday);
     };
 
     getAllData();
@@ -120,27 +115,29 @@ const Dashboard = () => {
           <div className={style.report_wrapper}>
             <h1 className={style.report_heading}>Total orders</h1>
             <h1 className={style.report_stat}>
-              {dataMetrics.orderCount !== "-" ? dataMetrics.orderCount : "-"}
+              {orderCount > 0 ? orderCount : "-"}
             </h1>
             <h1 className={style.report_percentage}>+33%</h1>
           </div>
           <div className={style.report_wrapper}>
             <h1 className={style.report_heading}>Order Today</h1>
-            <h1 className={style.report_stat}>{dataMetrics.orderCountToday}</h1>
+            <h1 className={style.report_stat}>
+              {orderCountToday > 0 ? orderCountToday : "-"}
+            </h1>
             <h1 className={style.report_percentage}>+33%</h1>
           </div>
           <div className={style.report_wrapper}>
             <h1 className={style.report_heading}>Total reveneu</h1>
             <h1 className={style.report_stat}>
-              {`₹${dataMetrics.totalRevenue}`}
+              {totalReveneu > 0 ? `₹${totalReveneu}` : "-"}
             </h1>
             <h1 className={style.report_percentage}>+33%</h1>
           </div>
           <div className={style.report_wrapper}>
             <h1 className={style.report_heading}>Reveneu Today</h1>
-            <h1
-              className={style.report_stat}
-            >{`₹${dataMetrics.todayRevenue}`}</h1>
+            <h1 className={style.report_stat}>
+              {todayReveneu > 0 ? `₹${todayReveneu}` : "-"}
+            </h1>
             <h1 className={style.report_percentage}>+33%</h1>
           </div>
         </div>
