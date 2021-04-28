@@ -64,7 +64,7 @@ const OrderList = () => {
       let { data: orders, error } = await supabase
         .from("orders")
         .select(`*,order_products (*)`)
-        .range(pageNo - 12, pageNo)
+        .range(pageNo - 12, pageNo - 1)
         .order("id", { ascending: false });
       console.log(orders[0]);
       setOrdersFetched((old) => [...old, ...orders]);
@@ -73,26 +73,6 @@ const OrderList = () => {
     fetchData();
   }, [pageNo]);
 
-  //fetch data on page load
-  useEffect(() => {
-    const fetchData = async () => {
-      setIsLoading(true);
-      let { data: orders, error } = await supabase
-        .from("orders")
-        .select(`*,order_products (*)`)
-        .range(pageNo - 12, pageNo)
-        .order("id", { ascending: false });
-      console.log(orders[0]);
-      setOrdersFetched((old) => [...orders]);
-      setIsLoading(false);
-    };
-    fetchData();
-  }, []);
-
-  const handleLoadMore = () => {
-    setPageNo((old) => old + 12);
-  };
-
   const OrderCard = ({ order }) => {
     return (
       <Box
@@ -100,6 +80,11 @@ const OrderList = () => {
         margin="5px"
         borderWidth="1px"
         borderRadius="lg"
+        backgroundColor={
+          order.order_products.some((prd) => prd.product_barcode === "")
+            ? "red.100"
+            : "white"
+        }
         onClick={() => history.push(`/orderedit/${order.id}`)}
       >
         <Flex height="auto" p="5px">
@@ -205,16 +190,21 @@ const OrderList = () => {
             <SearchIcon mt="5" />
           </InputRightElement>
         </InputGroup>
-
-        {searchValue.length < 1
-          ? ordersFetched.map((order) => (
-              <OrderCard order={order} key={order.id} />
-            ))
-          : searchedOrders.map((order) => (
-              <OrderCard order={order} key={order.id} />
-            ))}
-        {isLoading && <CircularProgress isIndeterminate p="20px" />}
-        <Button onClick={handleLoadMore} mt="20px" mb="20px">
+        <Stack w="98%" ml="2%">
+          {searchValue.length < 1
+            ? ordersFetched.map((order) => (
+                <OrderCard order={order} key={order.id} />
+              ))
+            : searchedOrders.map((order) => (
+                <OrderCard order={order} key={order.id} />
+              ))}
+        </Stack>
+        <Button
+          isLoading={isLoading}
+          onClick={() => setPageNo((old) => old + 12)}
+          mt="20px"
+          mb="20px"
+        >
           Load More
         </Button>
         <IconButton

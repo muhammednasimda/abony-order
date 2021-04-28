@@ -18,7 +18,7 @@ import {
   DownloadIcon,
 } from "@chakra-ui/icons";
 
-import { Badge, Img, InputRightElement } from "@chakra-ui/react";
+import { Badge, Image, Img, InputRightElement } from "@chakra-ui/react";
 
 import Popup from "reactjs-popup";
 import "reactjs-popup/dist/index.css";
@@ -109,7 +109,13 @@ const OrderEdit = (props) => {
       .update(updatedOrderDetails)
       .eq("id", orderDetails.id);
 
-    if (!error) {
+    const { data: dataProducts, error: errorProducts } = await supabase
+      .from("order_products")
+      .insert([...order_products], { upsert: true });
+
+    console.log(dataProducts);
+    console.log(order_products);
+    if (!error && !errorProducts) {
       setIsLoading(false);
       setTimeout(() => {
         onClose();
@@ -145,6 +151,18 @@ const OrderEdit = (props) => {
   const handleImageClick = (imageUrl) => {
     setPopupImage(imageUrl);
     onImageOpen();
+  };
+
+  const updateSingleProduct = (id, name, value) => {
+    const index = orderDetails.order_products.findIndex(
+      (productInState) => productInState.id == id
+    );
+    let productsArr = [...orderDetails.order_products];
+    productsArr[index] = { ...productsArr[index], [name]: value };
+    setOrderDetails((old) => ({
+      ...orderDetails,
+      order_products: productsArr,
+    }));
   };
 
   const downloadReciept = () => {
@@ -292,7 +310,6 @@ const OrderEdit = (props) => {
                             }));
                           }}
                         >
-                          <option value="nasim">Nasim</option>
                           <option value="company">Company</option>
                         </Select>
                       </>
@@ -593,9 +610,112 @@ const OrderEdit = (props) => {
             margin="5px"
             mt="10px"
           >
-            <Heading color="#29283C" fontSize="18px" fontWeight="600" mb="10px">
-              Order Products
-            </Heading>
+            <Stack direction="row" justifyContent="space-between">
+              <Heading
+                color="#29283C"
+                fontSize="18px"
+                fontWeight="600"
+                mb="10px"
+              >
+                Order Products
+              </Heading>
+              <Popup
+                lockScroll={true}
+                closeOnDocumentClick={false}
+                trigger={<IconButton icon={<EditIcon />} size="sm" />}
+                modal
+                contentStyle={{ width: "80vw", borderRadius: "10px" }}
+                nested
+              >
+                {(close) => (
+                  <Box p="15px">
+                    <FocusLock />
+                    {orderDetails.order_products &&
+                      orderDetails.order_products.map((product) => (
+                        <Box
+                          key={product.id}
+                          borderRadius="5px"
+                          borderWidth="2px"
+                          p="10px"
+                          mb="8px"
+                          key={product.id}
+                        >
+                          <Stack direction="row">
+                            <Image
+                              className={styles.product_image}
+                              onClick={() =>
+                                handleImageClick(
+                                  `https://firebasestorage.googleapis.com/v0/b/abony-cd5c4.appspot.com/o/${product.product_image}?alt=media`
+                                )
+                              }
+                              boxSize="60px"
+                              src={`https://firebasestorage.googleapis.com/v0/b/abony-cd5c4.appspot.com/o/${product.product_image}?alt=media`}
+                              borderRadius="10px"
+                            />
+                            <Box>
+                              <FormLabel mt="-6px"> Barcode</FormLabel>
+                              <Input
+                                mt="-6px"
+                                type="text"
+                                value={product.product_barcode || ""}
+                                onChange={(e) =>
+                                  updateSingleProduct(
+                                    product.id,
+                                    "product_barcode",
+                                    e.target.value
+                                  )
+                                }
+                              ></Input>
+                            </Box>
+                          </Stack>
+                          <Stack direction="row" spacing="5px">
+                            <Box>
+                              <FormLabel>Price</FormLabel>
+                              <Input
+                                mt="-6px"
+                                value={product.product_price}
+                                onChange={(e) =>
+                                  updateSingleProduct(
+                                    product.id,
+                                    "product_price",
+                                    e.target.value
+                                  )
+                                }
+                                type="text"
+                              ></Input>
+                            </Box>
+                            <Box>
+                              <FormLabel>Size</FormLabel>
+                              <Input
+                                mt="-6px"
+                                onChange={(e) =>
+                                  updateSingleProduct(
+                                    product.id,
+                                    "product_size",
+                                    e.target.value
+                                  )
+                                }
+                                value={product.product_size}
+                                type="text"
+                              ></Input>
+                            </Box>
+                          </Stack>
+                        </Box>
+                      ))}
+                    <Button
+                      onClick={close}
+                      ml="65%"
+                      colorScheme="teal"
+                      mt="10px"
+                      w="100px"
+                    >
+                      Ok
+                    </Button>
+                  </Box>
+                )}
+              </Popup>
+            </Stack>
+
             {orderDetails.order_products &&
               orderDetails.order_products.map((product) => (
                 <Box

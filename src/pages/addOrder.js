@@ -86,7 +86,7 @@ const AddOrder = () => {
     setOrder({
       order_date: new Date(),
       is_reseller: false,
-      payment_to: "nasim",
+      payment_to: "company",
       payment_status: true,
       shipping_charge: 0,
     });
@@ -140,6 +140,9 @@ const AddOrder = () => {
     let orderObject = {
       ...order,
       customer_instagram: match ? match[1] : order.customer_instagram,
+      customer_phone: parseInt(
+        order.customer_phone.toString().replace(/\D/g, "").slice(-10)
+      ),
       payment_mode: paymentMode,
       order_status: "RECIEVED",
     };
@@ -193,10 +196,7 @@ const AddOrder = () => {
     ) {
       //validate order products
       const isproducts = orderProducts.filter(
-        (product) =>
-          !product.product_barcode ||
-          !product.product_price ||
-          !product.product_size
+        (product) => !product.product_price || !product.product_size
       );
       if (isproducts.length > 0) {
         setIsAlertOpen(false);
@@ -601,8 +601,8 @@ const AddOrder = () => {
                     value={order.payment_to}
                     onChange={updateOrder}
                   >
-                    <option value="nasim">Nasim</option>
                     <option value="company">Company</option>
+                    <option value="shabeer">Shabeer</option>
                   </Select>
                 </FormControl>
               </Stack>
