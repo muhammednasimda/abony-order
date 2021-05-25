@@ -9,6 +9,7 @@ import AddOrder from "./pages/addOrder";
 
 import OrderEdit from "./pages/orderEdit";
 import OrderList from "./pages/orderList";
+import OrderListRaw from "./pages/OrderListRaw";
 import OrderRing from "./pages/orderRing";
 
 function ScrollToTop() {
@@ -31,6 +32,7 @@ function App() {
           <Route exact path="/" component={OrderList} />
           <Route exact path="/orderedit/:id" component={OrderEdit} />
           <Route exact path="/orderring/" component={OrderRing} />
+          <Route exact path="/all" component={OrderListRaw} />
         </Switch>
       </Router>
     </>

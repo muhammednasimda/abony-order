@@ -31,15 +31,6 @@ const OrderList = () => {
 
   const [searchValue, setSearchValue] = useState("");
 
-  // const searchValue = useStore((state) => state.search_value);
-  // const setSearchValue = useStore((state) => state.setSearchValue);
-
-  // const searchedOrders = useStore((state) => state.orders_searched);
-  // const setSearchedOrders = useStore((state) => state.setSearchedOrders);
-
-  // const ordersFetched = useStore((state) => state.orders);
-  // const setOrdersFetched = useStore((state) => state.setOrders);
-
   useEffect(() => {
     if (searchValue == "") {
       setSearchedOrders([]);
