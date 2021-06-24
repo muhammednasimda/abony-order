@@ -28,6 +28,7 @@ const OrderList = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [searchedOrders, setSearchedOrders] = useState([]);
   const [pageNo, setPageNo] = useState(12);
+  const [searchId, setSearchId] = useState();
 
   const [searchValue, setSearchValue] = useState("");
 
@@ -45,7 +46,6 @@ const OrderList = () => {
       .select(`*,order_products (*)`)
       .ilike(`customer_name`, `%${searchValue}%`)
       .order("id", { ascending: false });
-    console.log(error);
     console.log(data);
     setSearchedOrders(data);
   };
@@ -170,7 +170,20 @@ const OrderList = () => {
     <>
       <Header title="Order List" isBack="false" />
       <div className={styles.container}>
-        <InputGroup size="lg" p="2" mt="5">
+        <Stack direction="row" w="90%" mt="20px">
+          <Input
+            placeholder="Type ID"
+            value={searchId}
+            onChange={(e) => setSearchId(e.target.value)}
+          />
+          <Button
+            onClick={() => searchId && history.push(`/orderedit/${searchId}`)}
+          >
+            Go
+          </Button>
+        </Stack>
+
+        <InputGroup size="lg" p="2" mt="3">
           <Input
             pr="4.5rem"
             placeholder="Search Orders"
@@ -183,10 +196,10 @@ const OrderList = () => {
         </InputGroup>
         <Stack w="98%" ml="2%">
           {searchValue.length < 1
-            ? ordersFetched.map((order) => (
+            ? ordersFetched?.map((order) => (
                 <OrderCard order={order} key={order.id} />
               ))
-            : searchedOrders.map((order) => (
+            : searchedOrders?.map((order) => (
                 <OrderCard order={order} key={order.id} />
               ))}
         </Stack>
