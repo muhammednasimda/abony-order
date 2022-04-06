@@ -131,6 +131,9 @@ const OrderEdit = (props) => {
       tax: 0,
       quantity: 1,
       weight: 400,
+      height: 45,
+      width: 35,
+      breadth: 5,
       description: "Womens Dress",
       category: "Apparel",
       name: orderDetails.customer_name,
@@ -638,7 +641,6 @@ const OrderEdit = (props) => {
                           borderWidth="2px"
                           p="10px"
                           mb="8px"
-                          key={product.id}
                         >
                           <Stack direction="row">
                             <Image
