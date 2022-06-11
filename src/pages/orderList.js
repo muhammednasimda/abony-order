@@ -3,8 +3,7 @@ import styles from "./css/addOrder.module.scss";
 import supabase from "../supabase";
 
 import { useHistory } from "react-router-dom";
-import backIcon from "../assets/backIcon.png";
-import { Box, Flex, Stack } from "@chakra-ui/layout";
+import { Box, Flex, Stack, SimpleGrid } from "@chakra-ui/layout";
 import {
   Text,
   Image,
@@ -78,7 +77,7 @@ const OrderList = () => {
         }
         onClick={() => history.push(`/orderedit/${order.id}`)}
       >
-        <Flex height="auto" p="5px">
+        <Flex height="auto" p="5px" width="100%">
           {order.order_products.length > 0 ? (
             <Image
               p="5px"
@@ -96,10 +95,18 @@ const OrderList = () => {
               src={`https://via.placeholder.com/150`}
             />
           )}
-          <Flex flexDirection="column" ml="3" mt="1">
-            <Stack direction="row">
+          <Flex flexDirection="column" ml="3" mt="1" width="100%">
+            <Stack
+              direction="row"
+              justify="space-between"
+              align="center"
+              width="100%"
+            >
+              <Text fontSize="lg" fontWeight="medium">
+                {order.customer_name}
+              </Text>
               <Badge
-                fontSize={15}
+                fontSize={10}
                 variant="outline"
                 alignSelf="start"
                 colorScheme="gray"
@@ -108,57 +115,76 @@ const OrderList = () => {
                 Order id: {order.id}
               </Badge>
             </Stack>
-            <Text fontSize="lg" fontWeight="medium">
-              {order.customer_name}
-            </Text>
+            <Stack
+              direction="row"
+              justify="space-between"
+              align="center"
+              width="100%"
+            >
+              <Text mt="1" fontWeight="bold">
+                ₹
+                {order.order_products.reduce(
+                  (acc, curr) => acc + curr.product_price,
+                  0
+                )}
+              </Text>
+              <Stack direction="row">
+                {order.order_status == "RECIEVED" ||
+                order.order_status == "CANCELLED" ? (
+                  <Badge variant="solid" mt=".5" colorScheme="red">
+                    {order.order_status}
+                  </Badge>
+                ) : (
+                  <Badge variant="solid" mt=".5" colorScheme="green">
+                    {order.order_status}
+                  </Badge>
+                )}
+                {order.payment_mode === "COD" ? (
+                  <Badge variant="solid" mt=".5" colorScheme="blue">
+                    COD
+                  </Badge>
+                ) : order.payment_status === true ? (
+                  <Badge variant="solid" mt=".5" colorScheme="green">
+                    PAID
+                  </Badge>
+                ) : (
+                  <Badge variant="solid" mt=".5" colorScheme="red">
+                    UNPAID
+                  </Badge>
+                )}
+              </Stack>
+            </Stack>
             <Badge
               variant="outline"
               colorScheme="yellow"
               alignSelf="left"
               fontSize="15px"
               mb="5px"
-              alignSelf="start"
+              width="fit-content"
             >
               {order.customer_phone}
             </Badge>
-            <Stack direction="row">
-              {order.order_status == "RECIEVED" ||
-              order.order_status == "CANCELLED" ? (
-                <Badge variant="solid" mt=".5" colorScheme="red">
-                  {order.order_status}
-                </Badge>
-              ) : (
-                <Badge variant="solid" mt=".5" colorScheme="green">
-                  {order.order_status}
-                </Badge>
-              )}
-              {order.payment_mode === "COD" ? (
-                <Badge variant="solid" mt=".5" colorScheme="blue">
-                  COD
-                </Badge>
-              ) : order.payment_status === true ? (
-                <Badge variant="solid" mt=".5" colorScheme="green">
-                  PAID
-                </Badge>
-              ) : (
-                <Badge variant="solid" mt=".5" colorScheme="red">
-                  UNPAID
-                </Badge>
-              )}
-            </Stack>
-            <Text mt="1" fontWeight="bold">
-              ₹
-              {order.order_products.reduce(
-                (acc, curr) => acc + curr.product_price,
-                0
-              )}
-            </Text>
-            <Stack direction="row">
-              {order.order_products.map((product) => (
-                <Badge variant="outline" colorScheme="green" key={product.id}>
-                  {product.product_barcode}
-                </Badge>
-              ))}
+
+            <Stack
+              direction="row"
+              justify="space-between"
+              align="center"
+              width="100%"
+            >
+              <Stack direction="row">
+                {order.order_products.map((product) => (
+                  <Badge variant="outline" colorScheme="green" key={product.id}>
+                    {product.product_barcode}
+                  </Badge>
+                ))}
+              </Stack>
+              <Stack direction="row">
+                {order.order_products.map((product) => (
+                  <Badge variant="outline" colorScheme="green" key={product.id}>
+                    {product.product_size}
+                  </Badge>
+                ))}
+              </Stack>
             </Stack>
           </Flex>
         </Flex>
@@ -167,10 +193,15 @@ const OrderList = () => {
   };
 
   return (
-    <>
+    <Box
+      width="100%"
+      display="flex"
+      alignItems="center"
+      justifyContent="center"
+    >
       <Header title="Order List" isBack="false" />
       <div className={styles.container}>
-        <Stack direction="row" w="90%" mt="20px">
+        <Stack direction="row" mt="20px" width="90%">
           <Input
             placeholder="Type ID"
             value={searchId}
@@ -194,7 +225,11 @@ const OrderList = () => {
             <SearchIcon mt="5" />
           </InputRightElement>
         </InputGroup>
-        <Stack w="98%" ml="2%">
+        <SimpleGrid
+          width="100%"
+          align="center"
+          columns={{ sm: 1, md: 2, lg: 3 }}
+        >
           {searchValue.length < 1
             ? ordersFetched?.map((order) => (
                 <OrderCard order={order} key={order.id} />
@@ -202,7 +237,7 @@ const OrderList = () => {
             : searchedOrders?.map((order) => (
                 <OrderCard order={order} key={order.id} />
               ))}
-        </Stack>
+        </SimpleGrid>
         <Button
           isLoading={isLoading}
           onClick={() => setPageNo((old) => old + 12)}
@@ -227,7 +262,7 @@ const OrderList = () => {
           onClick={() => history.push("/addorder")}
         />
       </div>
-    </>
+    </Box>
   );
 };
 
