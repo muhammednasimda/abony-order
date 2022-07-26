@@ -14,6 +14,7 @@ import {
   Button,
   IconButton,
   CircularProgress,
+  Select,
 } from "@chakra-ui/react";
 import { AddIcon, PlusSquareIcon, SearchIcon } from "@chakra-ui/icons";
 import Fonts from "../components/Fonts";
@@ -28,6 +29,7 @@ const OrderList = () => {
   const [searchedOrders, setSearchedOrders] = useState([]);
   const [pageNo, setPageNo] = useState(12);
   const [searchId, setSearchId] = useState();
+  const [orderStatus, setOrderStatus] = useState("");
 
   const [searchValue, setSearchValue] = useState("");
 
@@ -51,17 +53,27 @@ const OrderList = () => {
   useEffect(() => {
     const fetchData = async () => {
       setIsLoading(true);
-      let { data: orders, error } = await supabase
-        .from("orders")
-        .select(`*,order_products (*)`)
-        .range(pageNo - 12, pageNo - 1)
-        .order("id", { ascending: false });
-      console.log(orders[0]);
-      setOrdersFetched((old) => [...old, ...orders]);
+      if (orderStatus !== "") {
+        let { data: orders, error } = await supabase
+          .from("orders")
+          .select(`*,order_products (*)`)
+          // where order_status = orderStatus
+          .eq("order_status", orderStatus)
+          .range(pageNo - 12, pageNo - 1)
+          .order("id", { ascending: false });
+        setOrdersFetched((old) => [...old, ...orders]);
+      } else {
+        let { data: orders, error } = await supabase
+          .from("orders")
+          .select(`*,order_products (*)`)
+          .range(pageNo - 12, pageNo - 1)
+          .order("id", { ascending: false });
+        setOrdersFetched((old) => [...old, ...orders]);
+      }
       setIsLoading(false);
     };
     fetchData();
-  }, [pageNo]);
+  }, [pageNo, orderStatus]);
 
   const OrderCard = ({ order }) => {
     return (
@@ -213,6 +225,23 @@ const OrderList = () => {
             Go
           </Button>
         </Stack>
+        <Select
+          mt="5"
+          onChange={(e) => {
+            setOrdersFetched([]);
+            setPageNo(12);
+            setOrderStatus(e.target.value);
+          }}
+          w="90%"
+        >
+          <option value="">ALL</option>
+          <option value="RECIEVED">RECIEVED</option>
+          <option value="PACKED">PACKED</option>
+          <option value="SHIPPED">SHIPPED</option>
+          <option value="CANCELLED">CANCELLED</option>
+          <option value="RETURNED">RETURNED</option>
+          <option value="REFUNDED">REFUNDED</option>
+        </Select>
 
         <InputGroup size="lg" p="2" mt="3">
           <Input
