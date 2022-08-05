@@ -34,6 +34,7 @@
     "react-webcam-barcode-scanner": "0.0.2-rc2",
     "reactjs-popup": "^2.0.4",
     "sass": "^1.32.8",
+    "twilio": "^3.80.0",
     "uuid": "^8.3.2",
     "web-vitals": "^1.1.0",
     "zustand": "^3.4.1"

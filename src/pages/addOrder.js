@@ -48,6 +48,7 @@ import {
   Select,
   Switch,
   FormErrorMessage,
+  Checkbox,
 } from "@chakra-ui/react";
 import Header from "../components/Header";
 import Popup from "reactjs-popup";
@@ -62,6 +63,7 @@ const AddOrder = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [order, setOrder, updateOrder] = useFormLocal([]);
   const [roboText, setRoboText] = useState("");
+  const [sendMessage, setSendMessage] = useState(true);
 
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [orderProducts, setOrderProducts] = useState([
@@ -73,6 +75,7 @@ const AddOrder = () => {
       product_price: "",
       product_size: "",
       product_from: "SHOP",
+      sale_channel: "post",
     },
   ]);
   const [isValidationError, setIsValidationError] = useState(false);
@@ -95,7 +98,6 @@ const AddOrder = () => {
   //change or edit products array in state
   const handleOrderProduct = (name, value, id) => {
     let index = orderProducts.findIndex((order) => order.product_image === id);
-    console.log(index);
     let newArray = [...orderProducts];
     newArray[index] = {
       ...newArray[index],
@@ -124,6 +126,7 @@ const AddOrder = () => {
       product_price: "",
       product_size: "",
       product_from: "SHOP",
+      sale_channel: "post",
     };
     setOrderProducts((old) => [...old, newProducts]);
   };
@@ -134,7 +137,8 @@ const AddOrder = () => {
     setIsLoading(true);
     onOpen();
 
-    const rx = /(?:(?:http|https):\/\/)?(?:www\.)?(?:instagram\.com|instagr\.am)\/([A-Za-z0-9-_\.]+)/im;
+    const rx =
+      /(?:(?:http|https):\/\/)?(?:www\.)?(?:instagram\.com|instagr\.am)\/([A-Za-z0-9-_\.]+)/im;
     let match = rx.exec(order.customer_instagram);
 
     let orderObject = {
@@ -167,11 +171,39 @@ const AddOrder = () => {
       .insert(newOrderProducts);
     //after insert success
     setIsLoading(false);
+    // if (sendMessage) sendTxtMessage(orderResponse.data[0].id);
     setTimeout(() => {
       onClose();
       history.push("/");
     }, 2000);
-    console.log(orderProductsResponse);
+  };
+
+  const sendTxtMessage = async (orderId = "3000") => {
+    let message =
+      "Hi " +
+      order.customer_name +
+      ", your order has been placed successfully." +
+      "Your order id is " +
+      orderId;
+    const subject = "Abony";
+    // let cust_phone = "+91" + order.customer_phone;
+    // console.log(cust_phone);
+    // fetch(
+    //   `http://localhost:4000/send-text?recipient=${order.customer_phone}&textmessage=${message}`
+    // )
+    //   .then((res) => {
+    //     console.log(res);
+    //   })
+    //   .catch((err) => console.error(err));
+    let heroku = "https://abony-backend.herokuapp.com";
+    let localhost = "http://localhost:4000";
+    fetch(
+      `${heroku}/send-text-aws/?number=91${order.customer_phone}&message=${message}&subject=${subject}`
+    )
+      .then((res) => {
+        console.log(res);
+      })
+      .catch((err) => console.error(err));
   };
 
   const imageToServer = async (imagesArr) => {
@@ -500,22 +532,45 @@ const AddOrder = () => {
                   </Select>
                 </FormControl>
               </Stack>
-              <FormControl w="90%" mt="2" isRequired>
-                <FormLabel>Size/Color :</FormLabel>
-                <Input
-                  type="text"
-                  size="lg"
-                  name="product_size"
-                  value={product.product_size}
-                  onChange={(e) =>
-                    handleOrderProduct(
-                      e.target.name,
-                      e.target.value,
-                      product.product_image
-                    )
-                  }
-                />
-              </FormControl>
+              <Stack direction="row" w="90%" mt="5">
+                <FormControl w="90%" isRequired>
+                  <FormLabel>Size/Color :</FormLabel>
+                  <Input
+                    type="text"
+                    size="lg"
+                    name="product_size"
+                    value={product.product_size}
+                    onChange={(e) =>
+                      handleOrderProduct(
+                        e.target.name,
+                        e.target.value,
+                        product.product_image
+                      )
+                    }
+                  />
+                </FormControl>
+                <FormControl w="90%" isRequired>
+                  <FormLabel>Sale channel :</FormLabel>
+                  <Select
+                    size="lg"
+                    name="sale_channel"
+                    onChange={(e) =>
+                      handleOrderProduct(
+                        e.target.name,
+                        e.target.value,
+                        product.product_image
+                      )
+                    }
+                    value={product.sale_channel}
+                  >
+                    <option value="post">Post</option>
+                    <option value="story">Story</option>
+                    <option value="reel">Reel</option>
+                    <option value="whatsapp">Whatsapp</option>
+                    <option value="outbound">Outbound</option>
+                  </Select>
+                </FormControl>
+              </Stack>
               <FormControl w="90%" mt="2" mb="5" isRequired>
                 <FormLabel>Price :</FormLabel>
                 <Input
@@ -626,6 +681,27 @@ const AddOrder = () => {
             <AlertTitle mr={2}>Please Fill All Fields!</AlertTitle>
           </Alert>
         )}
+        <Checkbox
+          mt="2"
+          isChecked={sendMessage}
+          onChange={(e) => setSendMessage(!sendMessage)}
+        >
+          Send message to customer
+        </Checkbox>
+        {/* <Button
+          colorScheme="teal"
+          variant="solid"
+          size="lg"
+          w="90%"
+          padding="6"
+          mt="6"
+          mb="6"
+          loadingText="Uploading"
+          // onClick={() => setIsOpen(true)}
+          onClick={() => sendTxtMessage("3001")}
+        >
+          Send message
+        </Button> */}
         <Button
           colorScheme="teal"
           variant="solid"
