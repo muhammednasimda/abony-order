@@ -171,7 +171,7 @@ const AddOrder = () => {
       .insert(newOrderProducts);
     //after insert success
     setIsLoading(false);
-    // if (sendMessage) sendTxtMessage(orderResponse.data[0].id);
+    if (sendMessage) sendTxtMessage(orderResponse?.data[0]?.id);
     setTimeout(() => {
       onClose();
       history.push("/");
@@ -182,9 +182,10 @@ const AddOrder = () => {
     let message =
       "Hi " +
       order.customer_name +
-      ", your order has been placed successfully." +
+      ", your order with abonyclothing has been placed successfully." +
       "Your order id is " +
-      orderId;
+      orderId +
+      ". For any queries, please contact us at +91-9048700041.";
     const subject = "Abony";
     // let cust_phone = "+91" + order.customer_phone;
     // console.log(cust_phone);
@@ -198,7 +199,7 @@ const AddOrder = () => {
     let heroku = "https://abony-backend.herokuapp.com";
     let localhost = "http://localhost:4000";
     fetch(
-      `${heroku}/send-text-aws/?number=91${order.customer_phone}&message=${message}&subject=${subject}`
+      `${heroku}/send-text/?recipient=91${order.customer_phone}&textmessage=${message}`
     )
       .then((res) => {
         console.log(res);

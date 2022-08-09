@@ -46,7 +46,7 @@ import {
   AlertDialogOverlay,
   Select,
   Switch,
-  FormErrorMessage,
+  Checkbox,
   Heading,
   Text,
   useDisclosure,
@@ -75,6 +75,7 @@ const OrderEdit = (props) => {
   const [recieptOpen, setRecieptOpen] = useState(false);
   const cancelRef = useRef();
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const [sendMessage, setSendMessage] = useState(true);
   const {
     isOpen: isImageOpen,
     onOpen: onImageOpen,
@@ -115,6 +116,7 @@ const OrderEdit = (props) => {
 
     console.log(dataProducts);
     console.log(order_products);
+    if (sendMessage) sendTxtMessage();
     if (!error && !errorProducts) {
       setIsLoading(false);
       setTimeout(() => {
@@ -123,6 +125,63 @@ const OrderEdit = (props) => {
     }
 
     console.log(error);
+  };
+
+  const sendTxtMessage = async () => {
+    // let message =
+    //   "Hi " +
+    //   order.customer_name +
+    //   ", your order has been placed successfully." +
+    //   "Your order id is " +
+    //   orderId;
+    let message = "";
+    console.log(orderDetails.order_status);
+    switch (orderDetails.order_status) {
+      case "RECIEVED":
+        message = `Hi ${orderDetails.customer_name} your order with abonyclothing has been received successfully. Your order id is ${orderDetails.id}`;
+        break;
+      case "PACKED":
+        message =
+          "Hi " +
+          orderDetails.customer_name +
+          ", your order with abonyclothing has been packed successfully of order id " +
+          orderDetails.id +
+          `. Track your order in https://www.delhivery.com/track/package/${orderDetails.shipping_awb}`;
+        break;
+      case "SHIPPED":
+        message =
+          "Hi " +
+          orderDetails.customer_name +
+          ", your order with abonyclothing has been shipped successfully of order id " +
+          orderDetails.id;
+        break;
+      case "CANCELLED":
+        message =
+          "Hi " +
+          orderDetails.customer_name +
+          ", your order with abonyclothing has been cancelled successfully" +
+          " of order id " +
+          orderDetails.id;
+        break;
+      default:
+        message =
+          "Hi " +
+          orderDetails.customer_name +
+          ", your order with abonyclothing has been placed successfully" +
+          "of order id " +
+          orderDetails.id;
+        break;
+    }
+    console.log(message);
+    let heroku = "https://abony-backend.herokuapp.com";
+    let localhost = "http://localhost:4000";
+    fetch(
+      `${heroku}/send-text/?recipient=91${orderDetails.customer_phone}&textmessage=${message}`
+    )
+      .then((res) => {
+        console.log(res);
+      })
+      .catch((err) => console.error(err));
   };
 
   const copyShipping = () => {
@@ -995,6 +1054,13 @@ const OrderEdit = (props) => {
 
                 <AlertDialogBody>
                   Are you sure you want to update this order ?
+                  <Checkbox
+                    mt="2"
+                    isChecked={sendMessage}
+                    onChange={(e) => setSendMessage(!sendMessage)}
+                  >
+                    Send message to customer
+                  </Checkbox>
                 </AlertDialogBody>
 
                 <AlertDialogFooter>
