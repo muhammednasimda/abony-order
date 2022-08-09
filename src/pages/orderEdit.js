@@ -1053,7 +1053,7 @@ const OrderEdit = (props) => {
                 </AlertDialogHeader>
 
                 <AlertDialogBody>
-                  Are you sure you want to update this order ?
+                  Are you sure you want to update this order ?<br></br>
                   <Checkbox
                     mt="2"
                     isChecked={sendMessage}
