@@ -138,22 +138,24 @@ const OrderEdit = (props) => {
     console.log(orderDetails.order_status);
     switch (orderDetails.order_status) {
       case "RECIEVED":
-        message = `Hi ${orderDetails.customer_name} your order with abonyclothing has been received successfully. Your order id is ${orderDetails.id}`;
+        message = `Hi ${orderDetails.customer_name} your order with abonyclothing has been received successfully. Your order id is ${orderDetails.id}. Please keep this order id for future reference. For any queries please call us on +91-9048700041. Thank you for shopping with abonyclothing.`;
         break;
       case "PACKED":
         message =
           "Hi " +
           orderDetails.customer_name +
-          ", your order with abonyclothing has been packed successfully of order id " +
+          ", your order with abonyclothing has been packed and ready to dispatch of order id " +
           orderDetails.id +
-          `. Track your order in https://www.delhivery.com/track/package/${orderDetails.shipping_awb}`;
+          ". Please keep this order id for future reference. For any queries please contact us at +91-9048700041. Thank you.";
         break;
       case "SHIPPED":
         message =
           "Hi " +
           orderDetails.customer_name +
           ", your order with abonyclothing has been shipped successfully of order id " +
-          orderDetails.id;
+          orderDetails.id +
+          `. Track your order https://www.delhivery.com/track/package/${orderDetails.shipping_awb}` +
+          ". For any queries please contact us at +91-9048700041. Thank you.";
         break;
       case "CANCELLED":
         message =

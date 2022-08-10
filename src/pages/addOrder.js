@@ -179,13 +179,7 @@ const AddOrder = () => {
   };
 
   const sendTxtMessage = async (orderId = "3000") => {
-    let message =
-      "Hi " +
-      order.customer_name +
-      ", your order with abonyclothing has been placed successfully." +
-      "Your order id is " +
-      orderId +
-      ". For any queries, please contact us at +91-9048700041.";
+    let message = `Hi ${order.customer_name} your order with abonyclothing has been received successfully. Your order id is ${orderId}. Please keep this order id for future reference. For any queries please call us on +91-9048700041. Thank you for shopping with abonyclothing.`;
     const subject = "Abony";
     // let cust_phone = "+91" + order.customer_phone;
     // console.log(cust_phone);
