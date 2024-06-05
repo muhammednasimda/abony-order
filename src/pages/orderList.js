@@ -1,25 +1,22 @@
-import { React, useRef, useState, useEffect } from "react";
-import styles from "./css/addOrder.module.scss";
+import { React, useEffect, useState } from "react";
 import supabase from "../supabase";
+import styles from "./css/addOrder.module.scss";
 
-import { useHistory } from "react-router-dom";
-import { Box, Flex, Stack, SimpleGrid } from "@chakra-ui/layout";
+import { AddIcon, SearchIcon } from "@chakra-ui/icons";
+import { Box, Flex, SimpleGrid, Stack } from "@chakra-ui/layout";
 import {
-  Text,
-  Image,
   Badge,
-  InputGroup,
-  Input,
-  InputRightElement,
   Button,
   IconButton,
-  CircularProgress,
+  Image,
+  Input,
+  InputGroup,
+  InputRightElement,
   Select,
+  Text
 } from "@chakra-ui/react";
-import { AddIcon, PlusSquareIcon, SearchIcon } from "@chakra-ui/icons";
-import Fonts from "../components/Fonts";
+import { useHistory } from "react-router-dom";
 import Header from "../components/Header";
-import useStore from "../ordersState";
 
 const OrderList = () => {
   const history = useHistory();
@@ -46,13 +43,14 @@ const OrderList = () => {
       .from("orders")
       .select(`*,order_products (*)`)
       .ilike(`customer_name`, `%${searchValue}%`)
-      .order("id", { ascending: false });
+      .order("id", { ascending: false, nullsFirst: true });
     console.log(data);
     setSearchedOrders(data);
   };
   useEffect(() => {
     const fetchData = async () => {
       setIsLoading(true);
+      console.log("fetching data")
       if (orderStatus !== "") {
         let { data: orders, error } = await supabase
           .from("orders")
@@ -60,14 +58,14 @@ const OrderList = () => {
           // where order_status = orderStatus
           .eq("order_status", orderStatus)
           .range(pageNo - 12, pageNo - 1)
-          .order("id", { ascending: false });
+          .order("id", { ascending: false, nullsFirst: true });
         setOrdersFetched((old) => [...old, ...orders]);
       } else {
         let { data: orders, error } = await supabase
           .from("orders")
           .select(`*,order_products (*)`)
           .range(pageNo - 12, pageNo - 1)
-          .order("id", { ascending: false });
+          .order("id", { ascending: false, nullsFirst: true });
         setOrdersFetched((old) => [...old, ...orders]);
       }
       setIsLoading(false);

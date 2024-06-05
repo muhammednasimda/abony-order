@@ -54,7 +54,7 @@ import {
 
 import Header from "../components/Header";
 
-import BarcodeScannerComponent from "react-webcam-barcode-scanner";
+// import BarcodeScannerComponent from "react-webcam-barcode-scanner";
 import html2canvas from "html2canvas";
 import LoadingCard from "../components/LoadingCard";
 import OrderReciept from "../components/OrderReciept";
@@ -899,7 +899,7 @@ const OrderEdit = (props) => {
                         />
                       </InputRightElement>
                     </InputGroup>
-                    {isBarcodeOpen && (
+                    {/* {isBarcodeOpen && (
                       <BarcodeScannerComponent
                         width={500}
                         height={50}
@@ -913,7 +913,7 @@ const OrderEdit = (props) => {
                           } else setQrResult("Not Found");
                         }}
                       />
-                    )}
+                    )} */}
                     <FormLabel mt="5">
                       {" "}
                       Shipping charge (For customer)
